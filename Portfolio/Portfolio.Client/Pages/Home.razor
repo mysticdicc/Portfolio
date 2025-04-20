@@ -1,0 +1,236 @@
+﻿@inject NotificationService NotificationService
+@inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
+@inject DialogService DialogService
+@inject TooltipService TooltipService
+@inject ContextMenuService ContextMenuService
+@inject NotificationService NotificationService
+
+@page "/"
+
+<RadzenStack Orientation="Orientation.Vertical" Gap="4px" Wrap="Radzen.FlexWrap.Wrap">
+    <RadzenRow Gap="1rem">
+        <RadzenColumn Style="justify-content: center; align-content: center; padding-right: 1rem; display: flex;" SizeXL="5" SizeMD="12">
+            <div style="padding: 5vh">
+                <div style="rotate: -9deg; background-color: deeppink; scale: 101%; box-shadow: 0px 0px 50px 15px deeppink;">
+                    <div style="box-shadow: 0px 0px 5px 4px deeppink;">
+                        <div style="rotate: -4deg; scale: 98%; border-width: 3px; box-shadow: 0px 0px 3px 1px deeppink;">
+                            <RadzenImage Path="img/profile.jpg" Style="border-width: 5px; max-width: 450px; max-height: 450px; height: auto; width: 100%; display: block;" class="pic_inside_box" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </RadzenColumn>
+        <RadzenColumn Style="align-content: center;" SizeXL="6" OffsetXL="1" SizeMD="12" OffsetMD="0">
+            <div style="position: relative;">
+                <RadzenStack Orientation="Orientation.Vertical">
+                    <RadzenText TextStyle="TextStyle.H2" TextAlign="TextAlign.Center" Style="margin-top: 3vh;">
+                        Richard Foster
+                    </RadzenText>
+                    <RadzenText TextStyle="TextStyle.H4" TextAlign="TextAlign.Center" Style="color: deeppink;">
+                        Technical Architect
+                    </RadzenText>
+                    <RadzenText TextStyle="TextStyle.H6" TextAlign="TextAlign.Center">
+                        A young professional with a keen and personal enthusiasm for development and learning new technologies.
+                        Track record of delivering key projects to a high standard and resolving highly technical issues in a short time frame.
+                    </RadzenText>
+                    <div style="display: flex; justify-content: center; align-content: center; gap: 5px;">
+                        <a href="https://www.linkedin.com/in/richard-foster-a077a717a/">
+                            <img src="img/linkedin.png" style="width: 48px; height: 48px;" />
+                        </a>
+                        <a href="https://github.com/mysticdicc">
+                            <img src="img/github.png" style="width: 48px; height: 48px;" />
+                        </a>
+                        <a href="mailto:richardfosterwork@gmail.com">
+                            <img src="img/gmail.png" style="width: 48px; height: 48px;" />
+                        </a>
+                        <a href="https://portfolio.danknet.uk/docs/cv_19-04-25.pdf">
+                            <img src="img/cv.png" style="width: 48px; height: 48px;" />
+                        </a>
+                    </div>
+                </RadzenStack>
+            </div>
+        </RadzenColumn>
+    </RadzenRow>
+    <RadzenRow Style="margin-top: 10vh;">
+        <RadzenText TextStyle="TextStyle.H6">
+            Work Experience
+        </RadzenText>
+    </RadzenRow>
+    <RadzenStack Orientation="Orientation.Vertical">
+        <RadzenRow Style="width: auto; margin-left: 0; margin-right: 0;">
+            <div style="height: 2px; width: 100%; background-color: dimgrey; opacity: 25%; margin-top: 1rem;" />
+            <RadzenRow class="we_row">
+                <RadzenColumn Size="3">
+                    <RadzenText TextStyle="TextStyle.H6">
+                        March 2025 - Ongoing
+                    </RadzenText>
+                </RadzenColumn>
+                <RadzenColumn Size="8" Offset="1">
+                    <RadzenText TextStyle="TextStyle.H5" Style="color: deeppink;">
+                        Technical Architect
+                    </RadzenText>
+                    <RadzenText TextStyle="TextStyle.H6" Style="color: orangered;">
+                        GXO Logistics
+                    </RadzenText>
+                    <RadzenText TextStyle="TextStyle.H6">
+                        Creation of technical designs and solutions to service business requirements, and identification of issues/areas of improvement for the future.
+                        Creation and support of end-to-end solutions and strategies through engagement with various business and IT stakeholders.
+                        <br>
+                        <br>
+                        Key Responsibilities:
+                        <br>
+                        > Designing and implementing solutions
+                        <br>
+                        > Evaluation of new technologies
+                        <br>
+                        > Third party management
+                        <br>
+                        > Project management
+                    </RadzenText>
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow class="we_row">
+                <RadzenColumn Size="3">
+                    <RadzenText TextStyle="TextStyle.H6">
+                        March 2022 - March 2025
+                    </RadzenText>
+                </RadzenColumn>
+                <RadzenColumn Size="8" Offset="1">
+                    <RadzenText TextStyle="TextStyle.H5" Style="color: deeppink;">
+                        Senior Infrastructure Engineer
+                    </RadzenText>
+                    <RadzenText TextStyle="TextStyle.H6" Style="color: orangered;">
+                        GXO Logistics
+                    </RadzenText>
+                    <RadzenText TextStyle="TextStyle.H6">
+                        3rd line EUC infrastructure support role, implementing and maintaining Windows based solutions for end user devices. Large focus on automation and
+                        scripting to maintain environment and reduce costs. Responsible for pioneering technical projects that saved vast amounts of money for the business.
+                        <br>
+                        <br>
+                        Key Responsibilities:
+                        <br>
+                        > Automation (PowerShell/SQL/C#)
+                        <br>
+                        > SCCM/Active Directory/Entra
+                        <br>
+                        > Documentation/Process Management
+                        <br>
+                        > Technical Escalation Point
+                        <br>
+                        > Network Support
+                    </RadzenText>
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow class="we_row">
+                <RadzenColumn Size="3">
+                    <RadzenText TextStyle="TextStyle.H6">
+                        January 2020 - March 2022
+                    </RadzenText>
+                </RadzenColumn>
+                <RadzenColumn Size="8" Offset="1">
+                    <RadzenText TextStyle="TextStyle.H5" Style="color: deeppink;">
+                        Technical Support Engineer
+                    </RadzenText>
+                    <RadzenText TextStyle="TextStyle.H6" Style="color: cornflowerblue;">
+                        Kuehne + Nagel
+                    </RadzenText>
+                    <RadzenText TextStyle="TextStyle.H6">
+                        2nd line field support role supporting the southern region of the UK, covering 21 sites as primary IT escalation point. Working closely with the Service Desk
+                        and site management to ensure the needs of the business are met alongside the needs of IT.
+                        <br>
+                        <br>
+                        Key Responsibilities:
+                        <br>
+                        > Maintaining Network Infrastructure
+                        <br>
+                        > New Machine Configuration
+                        <br>
+                        > Mobile/RF Device Management
+                        <br>
+                        > Knowledge Sharing
+                        <br>
+                        > Maintaining Site Relationships
+                        <br>
+                        > Migration Activities
+                    </RadzenText>
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow class="we_row">
+                <RadzenColumn Size="3">
+                    <RadzenText TextStyle="TextStyle.H6">
+                        May 2018 - December 2019
+                    </RadzenText>
+                </RadzenColumn>
+                <RadzenColumn Size="8" Offset="1">
+                    <RadzenText TextStyle="TextStyle.H5" Style="color: deeppink;">
+                        Service Desk Analyst
+                    </RadzenText>
+                    <RadzenText TextStyle="TextStyle.H6" Style="color: cornflowerblue;">
+                        Kuehne + Nagel
+                    </RadzenText>
+                    <RadzenText TextStyle="TextStyle.H6">
+                        1st line role supporting the business across the UK, Ireland and some of Eastern Europe with basic call triaging and incident resolution.
+                        Interworking between end users and other support roles to ensure the timely resolution of incidents and provide a good level of customer service.
+                    </RadzenText>
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow class="we_row">
+                <RadzenColumn Size="3">
+                    <RadzenText TextStyle="TextStyle.H6">
+                        November 2017 - March 2018
+                    </RadzenText>
+                </RadzenColumn>
+                <RadzenColumn Size="8" Offset="1">
+                    <RadzenText TextStyle="TextStyle.H5" Style="color: deeppink;">
+                        Service Desk Coordinator
+                    </RadzenText>
+                    <RadzenText TextStyle="TextStyle.H6" Style="color: cadetblue;">
+                        Computacenter
+                    </RadzenText>
+                    <RadzenText TextStyle="TextStyle.H6">
+                        Basic service desk role working on incident and change management with no user interaction. Involved in moving tickets between various resolution
+                        queues to ensure tickets are resolved as quickly as possible.
+                    </RadzenText>
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow class="we_row">
+                <RadzenColumn Size="3">
+                    <RadzenText TextStyle="TextStyle.H6">
+                        March 2017 - November 2017
+                    </RadzenText>
+                </RadzenColumn>
+                <RadzenColumn Size="8" Offset="1">
+                    <RadzenText TextStyle="TextStyle.H5" Style="color: deeppink;">
+                        Product Technician
+                    </RadzenText>
+                    <RadzenText TextStyle="TextStyle.H6" Style="color: red;">
+                        Monode LTD
+                    </RadzenText>
+                    <RadzenText TextStyle="TextStyle.H6">
+                        Assembling and packaging of various electronic devices from circuit boards/embedded devices to larger appliances. QA to ensure the devices meet the required specification
+                        and repairing returned stock. Minor database work for managing the stock numbers.
+                    </RadzenText>
+                </RadzenColumn>
+            </RadzenRow>
+        </RadzenRow>
+    </RadzenStack>
+</RadzenStack>
+
+<style>
+    .pic_inside_box {
+        border-style: solid;
+        border-color: deeppink;
+        background-color: deeppink;
+    }
+
+    .we_row {
+        margin-top: 2rem;
+        min-width: 100%;
+        position: relative;
+    }
+</style>
+
+@code {
+
+}
