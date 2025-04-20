@@ -23,15 +23,14 @@
     </RadzenHeader>
 
     <RadzenBody Style="justify-content: center; overflow-x: hidden;" onscroll="@(() => OnScroll())" id="layout">
-        <RadzenRow Style="padding-bottom: 25px; padding-top: 30px; height: fit-content; position: absolute;">
-            <div class="blob_wrapper" id="blobber">
-                <div class="blob_core pink_blob slow_blob" style="left: 10vw; animation-delay: 2s;"/>
-                <div class="blob_core pink_blob medium_blob" style="left: 30vw; animation-delay: 2s;" />
-                <div class="blob_core blue_blob slow_blob" style="left: 50vw; animation-delay: 1s;" />
-                <div class="blob_core blue_blob quick_blob" style="left: 70vw; animation-delay: 4s;" />
-                <div class="blob_core pink_blob slow_blob" style="left: 90vw; animation-delay: 3s;" />
-            </div>
-
+        <div class="blob_wrapper" id="blobber">
+            <div class="blob_core pink_blob slow_blob" style="left: 10vw; animation-delay: 2s;" />
+            <div class="blob_core pink_blob medium_blob" style="left: 30vw; animation-delay: 2s;" />
+            <div class="blob_core blue_blob slow_blob" style="left: 50vw; animation-delay: 1s;" />
+            <div class="blob_core blue_blob quick_blob" style="left: 70vw; animation-delay: 4s;" />
+            <div class="blob_core pink_blob slow_blob" style="left: 90vw; animation-delay: 3s;" />
+        </div>
+        <RadzenRow Style="padding-bottom: 25px; padding-top: 30px; height: fit-content; position: absolute;" id="body">
             <RadzenColumn SizeXL="2" SizeMD="1" SizeXS="0">
                 <div />
             </RadzenColumn>
@@ -82,6 +81,7 @@
         width: 100vw;
         transition: transform 0.05s;
         z-index: 100;
+        top: 10px;
     }
 
     .pink_blob {
@@ -107,15 +107,17 @@
     @@keyframes blob-move
     {
         100% {
-            transform: translateY(-30vh);
+        transform: translateY(-30vh);
         }
         0% {
-            transform: translateY(135vh);
+        transform: translateY(135vh);
         }
     }
 </style>
 
 @code {
+    bool firstRun = true;
+
     async protected override Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
@@ -123,7 +125,10 @@
 
     async void OnScroll()
     {
-        await JSRuntime.InvokeVoidAsync("scrollResponse");
+        if (firstRun == true) {
+            await JSRuntime.InvokeVoidAsync("addEventListener");
+            firstRun = false;
+        } 
     }
 
     void OnClickResume() {
