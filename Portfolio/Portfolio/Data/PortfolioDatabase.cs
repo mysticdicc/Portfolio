@@ -17,6 +17,7 @@ namespace Portfolio.Data
 
         public virtual DbSet<DevProjectPost> DevProjects { get; set; }
         public virtual DbSet<ItProjectPost> ItProjects { get; set; }
+        public virtual DbSet<BlogPost> BlogPosts {  get; set; } 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -41,6 +42,23 @@ namespace Portfolio.Data
             {
                 entity.ToTable("it_projects");
 
+                entity.Property(e => e.ID);
+                entity.Property(e => e.LastSubmit)
+                    .IsRequired();
+                entity.Property(e => e.Body)
+                    .IsUnicode(false)
+                    .IsRequired();
+                entity.Property(e => e.Title)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .IsRequired();
+                entity.Property(e => e.Base64Images);
+            });
+
+            modelBuilder.Entity<BlogPost>(entity =>
+            {
+                entity.ToTable("blog_posts");
+                
                 entity.Property(e => e.ID);
                 entity.Property(e => e.LastSubmit)
                     .IsRequired();

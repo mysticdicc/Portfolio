@@ -34,6 +34,7 @@ builder.Services.AddHttpClient();
 
 builder.Services.AddTransient<PortfolioClassLibrary.DevProjectAPI>();
 builder.Services.AddTransient<PortfolioClassLibrary.ItProjectAPI>();
+builder.Services.AddTransient<PortfolioClassLibrary.BlogPostAPI>();
 
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("EntraStuff"));

@@ -24,7 +24,7 @@ builder.Services.AddScoped(sp =>
 
 builder.Services.AddTransient<PortfolioClassLibrary.DevProjectAPI>();
 builder.Services.AddTransient<PortfolioClassLibrary.ItProjectAPI>();
-
+builder.Services.AddTransient<PortfolioClassLibrary.BlogPostAPI>();
 
 
 await builder.Build().RunAsync();

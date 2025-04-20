@@ -8,8 +8,15 @@ using System.Threading.Tasks;
 
 namespace PortfolioClassLibrary
 {
-    public class ItProjectPost : WebsitePost
+    public class ItProjectPost : IWebsitePost
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid ID { get; set; }
+        required public string Title { get; set; }
+        required public string Body { get; set; }
+        required public DateTime LastSubmit { get; set; }
+        required public List<string> Base64Images { get; set; }
 
         bool IsValidObject(ItProjectPost post)
         {
