@@ -8,16 +8,12 @@
             <form action="authentication/logout" method="post" style="height: 100%; width: fit-content;">
                 <AntiforgeryToken />
                 <input type="hidden" name="ReturnUrl" value="@currentUrl" />
-                <RadzenButton ButtonType="ButtonType.Submit" class="navlink" style="height: 100%; width: fit-content;" ButtonStyle="ButtonStyle.Base" Variant="Variant.Text" Size="ButtonSize.Small">
-                    Logout
-                </RadzenButton>
+                <RadzenButton Icon="logout" ButtonType="ButtonType.Submit" class="navlink" style="height: 100%; width: fit-content;" ButtonStyle="ButtonStyle.Base" Variant="Variant.Text" Size="ButtonSize.Small"/>
             </form>
         </Authorized>
         <NotAuthorized>
             <a href="authentication/login" style="height: 100%; width: 100%; width: fit-content;">
-                <RadzenButton ButtonType="ButtonType.Submit" style="height: 100%; width: fit-content;" ButtonStyle="ButtonStyle.Base" Variant="Variant.Text" Size="ButtonSize.Small">
-                    Login
-                </RadzenButton>
+                <RadzenButton Icon="person" ButtonType="ButtonType.Submit" style="height: 100%; width: fit-content;" ButtonStyle="ButtonStyle.Base" Variant="Variant.Text" Size="ButtonSize.Small"/>
             </a>
         </NotAuthorized>
     </AuthorizeView>

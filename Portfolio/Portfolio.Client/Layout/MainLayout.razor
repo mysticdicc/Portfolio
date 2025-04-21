@@ -13,13 +13,11 @@
 
 <RadzenLayout>
     <RadzenHeader class="header">
-        <RadzenStack Orientation="Orientation.Horizontal">
-            <RadzenButton ButtonStyle="ButtonStyle.Base" Variant="Variant.Text" Icon="home" Size="ButtonSize.Small" Click="@OnClickResume"/>
-            <RadzenButton ButtonStyle="ButtonStyle.Base" Variant="Variant.Text" Size="ButtonSize.Small" Click="@OnClickItProjects"> IT Projects</RadzenButton>
-            <RadzenButton ButtonStyle="ButtonStyle.Base" Variant="Variant.Text" Size="ButtonSize.Small" Click="@OnClickDevProjects">Dev Projects</RadzenButton>
-            <Portfolio.Client.Pages.LoginOrOut />
-        </RadzenStack>
-
+        <RadzenButton ButtonStyle="ButtonStyle.Base" Variant="Variant.Text" Icon="home" Size="ButtonSize.Small" Click="@OnClickResume"/>
+        <RadzenButton ButtonStyle="ButtonStyle.Base" Variant="Variant.Text" Size="ButtonSize.Small" Click="@OnClickDevProjects">Dev Projects</RadzenButton>
+        <RadzenButton ButtonStyle="ButtonStyle.Base" Variant="Variant.Text" Size="ButtonSize.Small" Click="@OnClickBlog">Blog</RadzenButton>
+        <RadzenButton ButtonStyle="ButtonStyle.Base" Variant="Variant.Text" Size="ButtonSize.Small" Click="@OnClickItProjects"> IT Projects</RadzenButton>
+        <Portfolio.Client.Pages.LoginOrOut />
     </RadzenHeader>
 
     <RadzenBody Style="justify-content: center; overflow-x: hidden;" onscroll="@(() => OnScroll())" id="layout">
@@ -106,12 +104,12 @@
 
     @@keyframes blob-move
     {
-        100% {
-        transform: translateY(-30vh);
-        }
-        0% {
-        transform: translateY(135vh);
-        }
+    100% {
+    transform: translateY(-30vh);
+    }
+    0% {
+    transform: translateY(135vh);
+    }
     }
 </style>
 
@@ -141,5 +139,9 @@
 
     void OnClickDevProjects() {
         NavigationManager.NavigateTo("/posts/dev");
+    }
+
+    void OnClickBlog() {
+        NavigationManager.NavigateTo("/posts/blog");
     }
 }

@@ -3,6 +3,7 @@
 @inject BlogPostAPI BlogAPI
 
 @page "/posts/{postType}"
+<PageTitle>Posts - @postType</PageTitle>
 
 <AuthorizeView>
     <Authorized>
@@ -46,7 +47,7 @@
     <RadzenStack>
         @foreach (IWebsitePost post in posts)
         {
-            <RadzenCard Style="padding: 2rem; background: rgba(50, 50, 50, 0.5)">
+            <RadzenCard Style="padding: 2rem; background: rgba(50, 50, 50, 0.5); min-width: 50vw;">
                 <RadzenStack>
 
                     <AuthorizeView>
