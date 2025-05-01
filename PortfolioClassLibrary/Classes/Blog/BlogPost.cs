@@ -5,8 +5,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PortfolioClassLibrary.Classes.Interfaces;
 
-namespace PortfolioClassLibrary
+namespace PortfolioClassLibrary.Classes.Blog
 {
     public class BlogPost : IWebsitePost
     {

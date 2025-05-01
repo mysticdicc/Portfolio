@@ -8,6 +8,11 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
 using Portfolio.Data;
 
+using PortfolioClassLibrary.Classes.Blog;
+using PortfolioClassLibrary.Classes.DevProjects;
+using PortfolioClassLibrary.Classes.Images;
+using PortfolioClassLibrary.Classes.ItProjects;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -32,9 +37,10 @@ builder.Services.AddScoped(sp =>
 });
 builder.Services.AddHttpClient();
 
-builder.Services.AddTransient<PortfolioClassLibrary.DevProjectAPI>();
-builder.Services.AddTransient<PortfolioClassLibrary.ItProjectAPI>();
-builder.Services.AddTransient<PortfolioClassLibrary.BlogPostAPI>();
+builder.Services.AddTransient<DevProjectAPI>();
+builder.Services.AddTransient<ItProjectAPI>();
+builder.Services.AddTransient<BlogPostAPI>();
+builder.Services.AddTransient<ImageAPI>();
 
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("EntraStuff"));

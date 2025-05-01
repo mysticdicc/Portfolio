@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Portfolio.Data;
-using PortfolioClassLibrary;
+using PortfolioClassLibrary.Classes.Blog;
 
 namespace Portfolio.Controllers
 {

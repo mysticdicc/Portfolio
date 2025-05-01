@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net.Http.Json;
 
-namespace PortfolioClassLibrary
+namespace PortfolioClassLibrary.Classes.Blog
 {
     public class BlogPostAPI(HttpClient httpClient)
     {

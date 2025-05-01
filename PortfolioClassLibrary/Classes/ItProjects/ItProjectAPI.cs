@@ -5,7 +5,7 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PortfolioClassLibrary
+namespace PortfolioClassLibrary.Classes.ItProjects
 {
     public class ItProjectAPI(HttpClient httpClient)
     {

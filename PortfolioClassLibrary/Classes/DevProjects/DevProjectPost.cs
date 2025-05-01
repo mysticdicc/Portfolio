@@ -5,8 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using PortfolioClassLibrary.Classes.Interfaces;
 
-namespace PortfolioClassLibrary
+namespace PortfolioClassLibrary.Classes.DevProjects
 {
     public class DevProjectPost : IWebsitePost
     {

@@ -326,20 +326,14 @@ else
 
     async void UploadPicture(InputFileChangeEventArgs eventArgs)
     {
-        using var memoryStream = new MemoryStream();
-        await eventArgs.File.OpenReadStream(10000000).CopyToAsync(memoryStream);
-        var bytes = memoryStream.ToArray();
-        var base64 = Convert.ToBase64String(bytes);
+        var base64 = await Image.ConvertToBase64(eventArgs.File.OpenReadStream(10000000));
         newPictures.Add($"data:{eventArgs.File.ContentType};base64,{base64}");
         StateHasChanged();
     }
 
     async void UploadPictureExisting(InputFileChangeEventArgs eventArgs, Guid guid)
     {
-        using var memoryStream = new MemoryStream();
-        await eventArgs.File.OpenReadStream(10000000).CopyToAsync(memoryStream);
-        var bytes = memoryStream.ToArray();
-        var base64 = Convert.ToBase64String(bytes);
+        var base64 = await Image.ConvertToBase64(eventArgs.File.OpenReadStream(10000000));
 
         if (posts != null)
         {

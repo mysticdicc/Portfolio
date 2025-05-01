@@ -1,5 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PortfolioClassLibrary;
+using PortfolioClassLibrary.Classes.Images;
+using PortfolioClassLibrary.Classes.DevProjects;
+using PortfolioClassLibrary.Classes.ItProjects;
+using PortfolioClassLibrary.Classes.Blog;
 
 namespace Portfolio.Data
 {
@@ -18,6 +22,7 @@ namespace Portfolio.Data
         public virtual DbSet<DevProjectPost> DevProjects { get; set; }
         public virtual DbSet<ItProjectPost> ItProjects { get; set; }
         public virtual DbSet<BlogPost> BlogPosts {  get; set; } 
+        public virtual DbSet<Image> Images { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -70,6 +75,25 @@ namespace Portfolio.Data
                     .IsUnicode(false)
                     .IsRequired();
                 entity.Property(e => e.Base64Images);
+            });
+
+            modelBuilder.Entity<Image>(entity =>
+            {
+                entity.ToTable("images");
+
+                entity.Property(e => e.Id);
+                entity.Property(e => e.Name)
+                    .HasMaxLength(100)
+                    .IsRequired();
+                entity.Property(e => e.LocalPath)
+                    .HasMaxLength(150)
+                    .IsRequired();
+                entity.Property(e => e.RemotePath)
+                    .HasMaxLength(150)
+                    .IsRequired();
+                entity.Property(e => e.FileExtension)
+                    .HasMaxLength(25)
+                    .IsRequired();
             });
         }
     }

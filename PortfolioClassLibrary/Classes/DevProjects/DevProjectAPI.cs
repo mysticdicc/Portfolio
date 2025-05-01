@@ -5,7 +5,7 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PortfolioClassLibrary
+namespace PortfolioClassLibrary.Classes.DevProjects
 {
     public class DevProjectAPI(HttpClient httpClient)
     {
