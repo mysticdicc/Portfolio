@@ -1,31 +1,77 @@
 ﻿@inject ImageAPI ImageAPI
+@inject IJSRuntime JSRuntime
+
 @page "/imageupload"
+@attribute [Authorize]
 
+<PageTitle>Picture Upload</PageTitle>
 
-<div style="width: 8rem; height: 8rem; border-style: dashed; border-color: grey; border-width: 1px; position: relative; display: flex; justify-content: center; align-content: center;">
+<div style="width: 8rem; height: 8rem; border-style: dashed; border-color: grey; border-width: 1px; position: relative; display: flex; justify-content: center; align-content: center; margin-bottom: 2rem;">
     <label for="upload">
         <RadzenIcon Icon="add" Style="width: 100%; height: 100%;" />
     </label>
 
-    <InputFile id="upload" style="width: 0%; height: 0%; overflow: hidden;" onchange="@(args => UploadPicture(args))" accept=".png, .jpg, .jpeg" />
+    <InputFile id="upload" style="width: 0%; height: 0%; overflow: hidden;" onchange="@(args => UploadImage(args))" accept=".png, .jpg, .jpeg" />
 </div>
 
-@foreach (var image in images) {
-    <div style="width: 100%; height: fit-content;">
-        <img src="@image.RemotePath" style="height: 10rem; width: 10rem;"/>
-    </div>
-}
+
+<RadzenRow Gap="2rem" RowGap="2rem" Style="width: 100%;">
+    @foreach (var image in images)
+    {
+        <RadzenColumn SizeXS="12" SizeSM="6" SizeMD="3" SizeLG="2">
+            <RadzenCard>
+                <div style="width: 100%; height: 15rem; justify-content: center; display: flex; flex-direction: row; position: relative; ">
+                    <RadzenIcon Icon="delete" onclick="@(() => DeleteImage(image.Id))" Style="top: 1rem; right: 1rem; position: absolute;" class="icon_button" />
+                    <RadzenIcon Icon="open_in_new" onclick="@(() => OpenImage(image.RemotePath))" Style="top: 1rem; right: 3rem; position: absolute" class="icon_button"/>
+                    <RadzenIcon Icon="link" onclick="@(() => CopyToClipboard(image.RemotePath))" Style="top: 1rem; left: 3rem; position: absolute;" class="icon_button"/>
+
+                    <label for=@image.Id>
+                        <RadzenIcon Icon="publish" Style="top: 1rem; left: 1rem; position: absolute;" class="icon_button" />
+                    </label>
+                    <InputFile id=@image.Id style="width: 0%; height: 0%; overflow: hidden;" onchange="@(args => UpdateExisting(args, image))" accept=".png, .jpg, .jpeg" />
+
+                    <img src="@image.RemotePath?cache=@DateTime.Now.ToString()" style="width: 100%; height: auto; border-style: solid; border-width: 2px; border-color: deeppink;" />
+                </div>
+            </RadzenCard>
+        </RadzenColumn>
+    }
+</RadzenRow>
+
+<style>
+    .icon_button {
+    background-color: rgb(187,134,252);
+    border-radius: 4px;
+    color: white;
+    }
+
+    .icon_button:hover {
+    cursor: pointer;
+    box-shadow: 2px 2px rgba(0, 0, 0, 0.2);
+    }
+
+</style>
 
 @code {
     List<Image> images = [];
 
-    protected override async Task OnInitializedAsync()
+    async protected override Task OnAfterRenderAsync(bool firstRender)
     {
-        images = await ImageAPI.GetAll();
-        await base.OnInitializedAsync();
+        await base.OnAfterRenderAsync(firstRender);
+
+        if (firstRender)
+        {
+            await UpdateImages();
+            firstRender = false;
+        }
     }
 
-    async void UploadPicture(InputFileChangeEventArgs eventArgs)
+    async Task UpdateImages()
+    {
+        images = await ImageAPI.GetAll();
+        StateHasChanged();
+    }
+
+    async void UploadImage(InputFileChangeEventArgs eventArgs)
     {
         var name = eventArgs.File.Name.Split('.')[0];
         var ext = eventArgs.File.Name.Split('.')[1];
@@ -33,7 +79,34 @@
         image.Base64String = await Image.ConvertToBase64(eventArgs.File.OpenReadStream(10000000));
 
         await ImageAPI.AddNew(image);
-        await OnInitializedAsync();
-        StateHasChanged();
+        await UpdateImages();
+    }
+
+    async void UpdateExisting(InputFileChangeEventArgs eventArgs, Image image)
+    {
+        image.Base64String = await Image.ConvertToBase64(eventArgs.File.OpenReadStream(10000000));
+        await ImageAPI.UpdateExisting(image);
+        await UpdateImages();
+    }
+
+    async void DeleteImage(Guid id)
+    {
+        var image = images.Where(x => x.Id == id).FirstOrDefault(); 
+
+        if (null != image) 
+        {
+            await ImageAPI.DeleteExisting(image);
+            await UpdateImages();
+        }
+    }
+
+    async Task OpenImage(string remotePath) 
+    {
+        await JSRuntime.InvokeAsync<object>("open", remotePath, "_blank");
+    }
+
+    async Task CopyToClipboard(string remotePath) 
+    {
+        await JSRuntime.InvokeAsync<object>("navigator.clipboard.writeText", remotePath);
     }
 }

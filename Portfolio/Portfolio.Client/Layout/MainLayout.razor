@@ -17,6 +17,11 @@
         <RadzenButton ButtonStyle="ButtonStyle.Base" Variant="Variant.Text" Size="ButtonSize.Small" Click="@OnClickDevProjects">Dev Projects</RadzenButton>
         <RadzenButton ButtonStyle="ButtonStyle.Base" Variant="Variant.Text" Size="ButtonSize.Small" Click="@OnClickBlog">Blog</RadzenButton>
         <RadzenButton ButtonStyle="ButtonStyle.Base" Variant="Variant.Text" Size="ButtonSize.Small" Click="@OnClickItProjects"> IT Projects</RadzenButton>
+        <AuthorizeView>
+            <Authorized>
+                <RadzenButton ButtonStyle="ButtonStyle.Base" Variant="Variant.Text" Size="ButtonSize.Small" Click="@OnClickImage" Icon="image"/>
+            </Authorized>
+        </AuthorizeView>
         <Portfolio.Client.Pages.LoginOrOut />
     </RadzenHeader>
 
@@ -28,7 +33,7 @@
             <div class="blob_core blue_blob quick_blob" style="left: 70vw; animation-delay: 4s;" />
             <div class="blob_core pink_blob slow_blob" style="left: 90vw; animation-delay: 3s;" />
         </div>
-        <RadzenRow Style="padding-bottom: 25px; padding-top: 30px; height: fit-content; position: absolute;" id="body">
+        <RadzenRow Style="padding-bottom: 25px; padding-top: 30px; height: fit-content; position: absolute; width: 100vw;" id="body">
             <RadzenColumn SizeXL="2" SizeMD="1" SizeXS="0">
                 <div />
             </RadzenColumn>
@@ -44,62 +49,62 @@
 
 <style>
     .body {
-        justify-content: center;
-        align-content: center;
-        min-width: 250px;
-        width: 100vw;
-        padding-left: 3vw;
-        padding-right: 3vw;
-        z-index: 150;
+    justify-content: center;
+    align-content: center;
+    min-width: 250px;
+    width: 100vw;
+    padding-left: 3vw;
+    padding-right: 3vw;
+    z-index: 150;
     }
 
     .header {
-        vertical-align: middle;
-        display: flex;
-        justify-content: center;
-        background-color: black;
-        width: 100%;
-        overflow-x: hidden;
-        z-index: 150;
+    vertical-align: middle;
+    display: flex;
+    justify-content: center;
+    background-color: black;
+    width: 100%;
+    overflow-x: hidden;
+    z-index: 150;
     }
 
     .blob_core {
-        z-index: 100;
-        height: 0px;
-        width: 0px;
-        border-radius: 50%;
-        position: absolute;
-        opacity: 20%;
-        top: -30vh;
+    z-index: 100;
+    height: 0px;
+    width: 0px;
+    border-radius: 50%;
+    position: absolute;
+    opacity: 20%;
+    top: -30vh;
     }
 
     .blob_wrapper {
-        position: absolute;
-        height: 100vh;
-        width: 100vw;
-        transition: transform 0.05s;
-        z-index: 100;
-        top: 10px;
+    position: absolute;
+    height: 100vh;
+    width: 100vw;
+    transition: transform 0.05s;
+    z-index: 100;
+    top: 10px;
     }
 
     .pink_blob {
-        box-shadow: 0px 0px 150px 75px deeppink;
+    box-shadow: 0px 0px 150px 75px deeppink;
     }
 
     .blue_blob {
-        box-shadow: 0px 0px 150px 75px lightblue;
+    box-shadow: 0px 0px 150px 75px lightblue;
     }
 
     .quick_blob {
-        animation: blob-move 4s infinite;
+    animation: blob-move 4s infinite;
     }
 
     .slow_blob {
-        animation: blob-move 7s infinite;
+    animation: blob-move 7s infinite;
     }
 
     .medium_blob {
-        animation: blob-move 6s infinite;
+    animation: blob-move 6s infinite;
     }
 
     @@keyframes blob-move
@@ -143,5 +148,9 @@
 
     void OnClickBlog() {
         NavigationManager.NavigateTo("/posts/blog");
+    }
+
+    void OnClickImage() {
+        NavigationManager.NavigateTo("/imageupload");
     }
 }

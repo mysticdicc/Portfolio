@@ -43,11 +43,45 @@ namespace PortfolioClassLibrary.Classes.Images
             using var memoryStream = new MemoryStream();
             byte[] bytes = Convert.FromBase64String(base64);
 
-            if (File.Exists(filePath)) { 
-                File.Delete(filePath);
+            if (File.Exists(filePath))
+            {
+                try
+                {
+                    await Task.Run(() => { File.Delete(filePath); });
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(ex.Message);
+                }
             }
 
-            await File.WriteAllBytesAsync(filePath, bytes);
+            try
+            {
+                await File.WriteAllBytesAsync(filePath, bytes);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        static public async Task DeleteFile(string filePath) 
+        {
+            if (File.Exists(filePath))
+            {
+                try
+                {
+                    await Task.Run(() => { File.Delete(filePath); });
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(ex.Message);
+                }
+            } 
+            else
+            {
+                throw new Exception("File not exist");
+            }
         }
     }
 }

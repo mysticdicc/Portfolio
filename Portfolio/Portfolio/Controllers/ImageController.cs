@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Portfolio.Controllers
 {
-    [Authorize]
     [ApiController]
     public class ImageController : ControllerBase
     {
@@ -21,6 +20,7 @@ namespace Portfolio.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         [Route("[controller]/get/all")]
         public string GetAll()
         {
@@ -29,6 +29,7 @@ namespace Portfolio.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         [Route("[controller]/get/byid")]
         public string GetById(Guid guid)
         {
@@ -38,6 +39,7 @@ namespace Portfolio.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         [Route("[controller]/post/new")]
         public async Task<Results<Ok<Image>, BadRequest<string>>> PostNew(Image image)
         {
@@ -72,19 +74,62 @@ namespace Portfolio.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         [Route("[controller]/post/update")]
-        public async void UpdateExisting(Image uploadImage) 
+        public async Task<Results<BadRequest<string>, Ok<string>>> UpdateExisting(Image uploadImage) 
+        {
+            if (null != uploadImage.Base64String) 
+            {
+                try
+                {
+                    await Image.SaveToFile(uploadImage.Base64String, uploadImage.LocalPath);
+                    return TypedResults.Ok("Image replaced");
+                }
+                catch (Exception ex) 
+                {
+                    return TypedResults.BadRequest<string>(ex.Message);
+                }
+            } 
+            else
+            {
+                return TypedResults.BadRequest<string>("No image provided");
+            }
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("[controller]/post/delete")]
+        public async Task<Results<BadRequest<string>, Ok<string>>> DeleteImage(Image image)
         {
             using var db = _PortfolioFactory.CreateDbContext();
-            var image = db.Images.Find(uploadImage.Id);
+            var dbImage = db.Images.Find(image.Id);
 
-            if (null != image) 
+            if (null != dbImage) 
             {
-                image.Name = uploadImage.Name;
-                image.RemotePath = uploadImage.RemotePath;
-            }
+                try
+                {
+                    await Image.DeleteFile(image.LocalPath);
+                } 
+                catch (Exception ex)
+                {
+                    return TypedResults.BadRequest(ex.Message);
+                }
 
-            await db.SaveChangesAsync();
+                try
+                {
+                    db.Images.Remove(dbImage);
+                    await db.SaveChangesAsync();
+                    return TypedResults.Ok($"{image.Id} deleted");
+                }
+                catch (Exception ex) 
+                {
+                    return TypedResults.BadRequest(ex.Message);
+                }
+            } 
+            else
+            {
+                return TypedResults.BadRequest<string>("Unable to find image with this ID");
+            }
         }
     }
 }

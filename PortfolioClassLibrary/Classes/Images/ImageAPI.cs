@@ -48,5 +48,10 @@ namespace PortfolioClassLibrary.Classes.Images
         {
             await _httpClient.PostAsJsonAsync<Image>("/image/post/update", image);
         }
+
+        public async Task DeleteExisting(Image image)
+        {
+            await _httpClient.PostAsJsonAsync<Image>("/image/post/delete", image);
+        }
     }
 }
