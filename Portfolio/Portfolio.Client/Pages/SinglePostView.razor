@@ -1,0 +1,61 @@
+﻿@inject DevProjectAPI DevAPI
+@inject ItProjectAPI ItAPI
+@inject BlogPostAPI BlogAPI
+@inject NavigationManager NavManager
+
+@page "/post/{postType}/{guid}"
+<PageTitle>Post - @guid</PageTitle>
+
+<RadzenCard Style="padding: 2rem; background: rgba(50, 50, 50, 0.5); min-width: 50vw;">
+    @if (null != post) 
+    {
+        <RadzenStack>
+            <RadzenRow>
+                <RadzenText TextStyle="TextStyle.H3">@post.Title</RadzenText>
+            </RadzenRow>
+            <RadzenRow>
+                <RadzenMarkdown TextStyle="TextStyle.H6">@post.Body</RadzenMarkdown>
+            </RadzenRow>
+
+            @if (post.Base64Images.Count != 0)
+            {
+                <RadzenCarousel style="max-height: 33vh; width: 100%; padding-top: 1rem; padding-bottom: 1rem;">
+                    <Items>
+                        @foreach (string base64img in post.Base64Images)
+                        {
+                            <RadzenCarouselItem style="max-height: 33vh">
+                                <img src=@base64img style="max-width: 75%; max-height: 30vh; height: auto; width: auto; border-style: solid; border-color: deeppink; border-width: 1px; box-shadow: deeppink 5px 5px;" />
+                            </RadzenCarouselItem>
+                        }
+                    </Items>
+                </RadzenCarousel>
+            }
+        </RadzenStack>
+    }
+</RadzenCard>
+
+@code {
+    [Parameter]
+    required public string postType { get; set; }
+    [Parameter]
+    required public string guid { get; set; }
+
+    IWebsitePost? post;
+
+    async protected override Task OnParametersSetAsync()
+    {
+        switch (postType)
+        {
+            case "blog":
+                post = await BlogAPI.GetById(guid);
+                break;
+            case "dev":
+                post = await DevAPI.GetById(guid);
+                break;
+            case "it":
+                post = await ItAPI.GetById(guid);
+                break;
+        }
+        await base.OnParametersSetAsync();
+    }
+}

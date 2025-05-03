@@ -6,19 +6,19 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <base href="@NavigationManager.BaseUri" />
-        <RadzenTheme @rendermode="InteractiveAuto" Theme="material-dark" />
+        <base href="/" />
+    <RadzenTheme @rendermode="InteractiveWebAssembly" Theme="material-dark" />
         <link rel="stylesheet" href="@Assets["lib/bootstrap/dist/css/bootstrap.min.css"]" />
         <link rel="stylesheet" href="@Assets["app.css"]" />
         <ImportMap />
-        <HeadOutlet @rendermode="InteractiveAuto" />
+        <HeadOutlet @rendermode="InteractiveWebAssembly" />
     </head>
 
     <body>
-        <Routes @rendermode="InteractiveAuto" />
+        <Routes @rendermode="InteractiveWebAssembly" />
         <script src="_content/Radzen.Blazor/Radzen.Blazor.js?v=@(typeof(Radzen.Colors).Assembly.GetName().Version)"></script>
-        <script src="_framework/blazor.web.js"></script>
         <script src="./js/layout.js"></script>
+        <script src="_framework/blazor.web.js"></script>
     </body>
 
 </html>

@@ -3,6 +3,7 @@
 
 @page "/imageupload"
 @attribute [Authorize]
+@rendermode InteractiveWebAssembly
 
 <PageTitle>Picture Upload</PageTitle>
 
@@ -29,7 +30,8 @@
                         <RadzenIcon Icon="publish" Style="top: 1rem; left: 1rem; position: absolute;" class="icon_button" />
                     </label>
                     <InputFile id=@image.Id style="width: 0%; height: 0%; overflow: hidden;" onchange="@(args => UpdateExisting(args, image))" accept=".png, .jpg, .jpeg" />
-
+                    
+                    <RadzenTextBox @bind-Value=@image.Name Style="bottom: 0; left: 0; width: 100%; position: absolute;"/>
                     <img src="@image.RemotePath?cache=@DateTime.Now.ToString()" style="width: 100%; height: auto; border-style: solid; border-width: 2px; border-color: deeppink;" />
                 </div>
             </RadzenCard>

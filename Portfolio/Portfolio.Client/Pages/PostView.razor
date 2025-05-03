@@ -1,6 +1,8 @@
 ﻿@inject DevProjectAPI DevAPI
 @inject ItProjectAPI ItAPI
 @inject BlogPostAPI BlogAPI
+@inject NavigationManager NavManager
+@inject IJSRuntime JS
 
 @page "/posts/{postType}"
 <PageTitle>Posts - @postType</PageTitle>
@@ -118,6 +120,11 @@
                                 </Items>
                             </RadzenCarousel>
                         }
+                        <RadzenRow Style="display: flex; flex-direction: row; justify-content: end;">
+                            <RadzenButton Icon="arrow_forward" Click="(() => OpenPost(post.ID.ToString()))">
+                                Read More
+                            </RadzenButton>
+                        </RadzenRow>
                     </div>
 
                     <AuthorizeView>
@@ -264,15 +271,10 @@ else
     string? newBody;
     List<string> newPictures = new List<string>();
 
-    async protected override Task OnInitializedAsync()
+    async protected override Task OnParametersSetAsync()
     {
         await Refresh();
-        await base.OnInitializedAsync();
-    }
-
-    async protected override void OnParametersSet()
-    {
-        await OnInitializedAsync();
+        await base.OnParametersSetAsync();
     }
 
     async Task Refresh()
@@ -287,7 +289,7 @@ else
         {
             posts = new List<IWebsitePost>();
         }
-        
+
         editPostHiddenDict = new Dictionary<Guid, bool>();
 
         foreach (IWebsitePost post in posts)
@@ -381,5 +383,10 @@ else
     void DeleteImage(IWebsitePost post, string base64)
     {
         post.Base64Images.Remove(base64);
+    }
+
+    async Task OpenPost(string guid) 
+    {
+        NavManager.NavigateTo($"/post/{postType}/{guid}");
     }
 }

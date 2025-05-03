@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PortfolioClassLibrary.Classes.ItProjects;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Json;
@@ -22,6 +23,20 @@ namespace PortfolioClassLibrary.Classes.DevProjects
             else
             {
                 throw new Exception("No list");
+            }
+        }
+
+        public async Task<DevProjectPost> GetById(string guid)
+        {
+            var post = await _httpClient.GetFromJsonAsync<DevProjectPost>($"/devprojectpost/get/byid?id={guid}");
+
+            if (null != post)
+            {
+                return post;
+            }
+            else
+            {
+                throw new Exception("No post");
             }
         }
 

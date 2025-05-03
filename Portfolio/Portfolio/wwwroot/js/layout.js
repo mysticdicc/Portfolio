@@ -24,4 +24,3 @@ function scrollResponse() {
         blobber.style.top = (layoutY - 150) + 'px';
     }
 }
-

@@ -26,6 +26,15 @@ namespace Portfolio.Controllers
             return JsonConvert.SerializeObject(db.BlogPosts.ToList());
         }
 
+        [HttpGet]
+        [Route("[controller]/get/byid")]
+        public string GetById(string id)
+        {
+            using var db = _PortfolioFactory.CreateDbContext();
+            var realGuid = new Guid(id);
+            return JsonConvert.SerializeObject(db.BlogPosts.Where(x => x.ID == realGuid).FirstOrDefault());
+        }
+
         [HttpPost]
         [Authorize]
         [Route("[controller]/post/new")]

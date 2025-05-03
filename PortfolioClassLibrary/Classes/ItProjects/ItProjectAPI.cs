@@ -25,6 +25,20 @@ namespace PortfolioClassLibrary.Classes.ItProjects
             }
         }
 
+        public async Task<ItProjectPost> GetById(string guid)
+        {
+            var post = await _httpClient.GetFromJsonAsync<ItProjectPost>($"/itprojectpost/get/byid?id={guid}");
+
+            if (null != post)
+            {
+                return post;
+            }
+            else
+            {
+                throw new Exception("No post");
+            }
+        }
+
         public async Task AddPost(ItProjectPost post)
         {
             try

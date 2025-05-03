@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net.Http.Json;
+using PortfolioClassLibrary.Classes.ItProjects;
 
 namespace PortfolioClassLibrary.Classes.Blog
 {
@@ -22,6 +23,20 @@ namespace PortfolioClassLibrary.Classes.Blog
             else
             {
                 throw new Exception("No list");
+            }
+        }
+
+        public async Task<BlogPost> GetById(string guid)
+        {
+            var post = await _httpClient.GetFromJsonAsync<BlogPost>($"/blogpost/get/byid?id={guid}");
+
+            if (null != post)
+            {
+                return post;
+            }
+            else
+            {
+                throw new Exception("No post");
             }
         }
 
