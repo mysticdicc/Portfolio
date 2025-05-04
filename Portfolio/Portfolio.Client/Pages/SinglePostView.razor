@@ -3,11 +3,11 @@
 @inject BlogPostAPI BlogAPI
 @inject NavigationManager NavManager
 
-@page "/post/{postType}/{guid}"
+@page "/posts/{type}/{guid}/"
 <PageTitle>Post - @guid</PageTitle>
 
 <RadzenCard Style="padding: 2rem; background: rgba(50, 50, 50, 0.5); min-width: 50vw;">
-    @if (null != post) 
+    @if (null != post)
     {
         <RadzenStack>
             <RadzenRow>
@@ -36,7 +36,7 @@
 
 @code {
     [Parameter]
-    required public string postType { get; set; }
+    required public string type { get; set; }
     [Parameter]
     required public string guid { get; set; }
 
@@ -44,7 +44,9 @@
 
     async protected override Task OnParametersSetAsync()
     {
-        switch (postType)
+        Console.WriteLine($"Single post view: {guid} @ {type}");
+
+        switch (type)
         {
             case "blog":
                 post = await BlogAPI.GetById(guid);
@@ -57,5 +59,6 @@
                 break;
         }
         await base.OnParametersSetAsync();
+        StateHasChanged();
     }
 }

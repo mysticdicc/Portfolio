@@ -1,11 +1,13 @@
-﻿@inject DevProjectAPI DevAPI
+﻿@using System.Text.RegularExpressions
+
+@inject DevProjectAPI DevAPI
 @inject ItProjectAPI ItAPI
 @inject BlogPostAPI BlogAPI
 @inject NavigationManager NavManager
 @inject IJSRuntime JS
 
-@page "/posts/{postType}"
-<PageTitle>Posts - @postType</PageTitle>
+@page "/posts/{type}/"
+<PageTitle>Posts - @type</PageTitle>
 
 <AuthorizeView>
     <Authorized>
@@ -47,7 +49,7 @@
 @if (null != posts)
 {
     <RadzenStack>
-        @foreach (IWebsitePost post in posts)
+        @foreach (IWebsitePost post in posts.OrderByDescending(x => x.LastSubmit))
         {
             <RadzenCard Style="padding: 2rem; background: rgba(50, 50, 50, 0.5); min-width: 50vw;">
                 <RadzenStack>
@@ -104,26 +106,10 @@
                             <RadzenText TextStyle="TextStyle.H3">@post.Title</RadzenText>
                         </RadzenRow>
                         <RadzenRow>
-                            <RadzenMarkdown TextStyle="TextStyle.H6">@post.Body</RadzenMarkdown>
+                            <RadzenMarkdown TextStyle="TextStyle.H6">@SplitPostBody(post.Body)</RadzenMarkdown>
                         </RadzenRow>
-
-                        @if (post.Base64Images.Count != 0)
-                        {
-                            <RadzenCarousel style="max-height: 33vh; width: 100%; padding-top: 1rem; padding-bottom: 1rem;">
-                                <Items>
-                                    @foreach (string base64img in post.Base64Images)
-                                    {
-                                        <RadzenCarouselItem style="max-height: 33vh">
-                                            <img src=@base64img style="max-width: 75%; max-height: 30vh; height: auto; width: auto; border-style: solid; border-color: deeppink; border-width: 1px; box-shadow: deeppink 5px 5px;" />
-                                        </RadzenCarouselItem>
-                                    }
-                                </Items>
-                            </RadzenCarousel>
-                        }
-                        <RadzenRow Style="display: flex; flex-direction: row; justify-content: end;">
-                            <RadzenButton Icon="arrow_forward" Click="(() => OpenPost(post.ID.ToString()))">
-                                Read More
-                            </RadzenButton>
+                        <RadzenRow Style="display: flex; flex-direction: row;">
+                            <RadzenButton Icon="arrow_forward" Click="(() => OpenPost(post.ID.ToString()))" Style="margin-left: auto; margin-right: 0;" Text="Read More"/>
                         </RadzenRow>
                     </div>
 
@@ -152,24 +138,24 @@ else
 
 @code {
     [Parameter]
-    required public string postType { get; set; }
+    required public string type { get; set; }
 
     async Task<List<IWebsitePost>> GetAll() {
         var posts = new List<IWebsitePost>();
 
-        if (postType == "blog") 
+        if (type == "blog") 
         {
             var list = await BlogAPI.GetAll();
             posts.AddRange(list);
         }
 
-        if (postType == "dev") 
+        if (type == "dev")
         {
             var list = await DevAPI.GetAll();
             posts.AddRange(list);
         }
 
-        if (postType == "it") 
+        if (type == "it")
         {
             var list = await ItAPI.GetAll();
             posts.AddRange(list);
@@ -179,7 +165,7 @@ else
     }
 
     async Task AddPost(string title, string body, DateTime lastSubmit, List<string>base64images) {
-        if (postType == "blog")
+        if (type == "blog")
         {
             BlogPost newPost = new BlogPost
                 {
@@ -197,7 +183,7 @@ else
             await BlogAPI.AddPost(newPost);
         }
 
-        if (postType == "dev")
+        if (type == "dev")
         {
             DevProjectPost newPost = new DevProjectPost
                 {
@@ -215,7 +201,7 @@ else
             await DevAPI.AddPost(newPost);
         }
 
-        if (postType == "it")
+        if (type == "it")
         {
             ItProjectPost newPost = new ItProjectPost
                 {
@@ -230,34 +216,34 @@ else
     }
 
     async Task UpdatePost(IWebsitePost post) {
-        if (postType == "blog")
+        if (type == "blog")
         {
             await BlogAPI.UpdatePost((BlogPost)post);
         }
 
-        if (postType == "dev")
+        if (type == "dev")
         {
             await DevAPI.UpdatePost((DevProjectPost)post);
         }
 
-        if (postType == "it")
+        if (type == "it")
         {
             await ItAPI.UpdatePost((ItProjectPost)post);
         }
     }
 
     async Task DeletePost(Guid id) {
-        if (postType == "blog")
+        if (type == "blog")
         {
             await BlogAPI.DeletePost(id);
         }
 
-        if (postType == "dev")
+        if (type == "dev")
         {
             await DevAPI.DeletePost(id);
         }
 
-        if (postType == "it")
+        if (type == "it")
         {
             await ItAPI.DeletePost(id);
         }
@@ -273,8 +259,10 @@ else
 
     async protected override Task OnParametersSetAsync()
     {
+        Console.WriteLine($"Multi post view - {type}");
         await Refresh();
         await base.OnParametersSetAsync();
+        StateHasChanged();
     }
 
     async Task Refresh()
@@ -385,8 +373,22 @@ else
         post.Base64Images.Remove(base64);
     }
 
-    async Task OpenPost(string guid) 
+    void OpenPost(string guid) 
     {
-        NavManager.NavigateTo($"/post/{postType}/{guid}");
+        NavManager.NavigateTo($"/posts/{type}/{guid}/");
+    }
+
+    string SplitPostBody(string body) 
+    {
+        string[] words = body.Split(' ');
+
+        if (words.Length > 100)
+        {
+            return (string.Join(' ', words, 0, 100) + "...");
+        }
+        else
+        {
+            return body;
+        }
     }
 }

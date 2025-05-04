@@ -8,10 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="wwwroot\js\Layout.js" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\PortfolioClassLibrary\PortfolioClassLibrary.csproj" />
     <ProjectReference Include="..\Portfolio.Client\Portfolio.Client.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="9.0.4" />
@@ -21,21 +17,23 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Identity.Web" Version="3.8.3" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="3.8.4" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Radzen.Blazor" Version="6.6.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="wwwroot\js\layout.js" />
+    <PackageReference Include="Radzen.Blazor" Version="6.6.4" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="wwwroot\img\upload\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="wwwroot\js\layout.js">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>
