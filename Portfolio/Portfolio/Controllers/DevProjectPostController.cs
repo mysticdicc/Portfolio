@@ -88,10 +88,20 @@ namespace Portfolio.Controllers
                     existingPost.Title = post.Title;
                     existingPost.Body = post.Body;
                     existingPost.LastSubmit = DateTime.Now;
-                    existingPost.Images = post.Images;
+
+                    var removeImages = existingPost.Images.Except(post.Images).ToList();
 
                     try
                     {
+                        if (null != removeImages)
+                        {
+                            foreach (Image image in removeImages) 
+                            {
+                                await Image.DeleteFile(image.LocalPath);
+                                db.Images.Remove(image);
+                            }
+                        }
+
                         foreach (Image image in post.Images)
                         {
                             if (null != image.Base64String)
@@ -102,6 +112,7 @@ namespace Portfolio.Controllers
                             }
                         }
 
+                        existingPost.Images = post.Images;
                         await db.SaveChangesAsync();
 
                         return TypedResults.Ok(existingPost);
@@ -138,6 +149,20 @@ namespace Portfolio.Controllers
                 {
                     try
                     {
+                        foreach (Image image in item.Images)
+                        {
+                            if (null != image.Base64String)
+                            {
+                                await Image.DeleteFile(image.LocalPath);
+                                var dbImage = db.Images.Find(image.Id);
+
+                                if (null != dbImage)
+                                {
+                                    db.Images.Remove(dbImage);
+                                }
+                            }
+                        }
+
                         db.DevProjects.Remove(item);
                         await db.SaveChangesAsync();
 

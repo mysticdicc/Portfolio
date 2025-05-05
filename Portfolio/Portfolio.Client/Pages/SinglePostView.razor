@@ -2,11 +2,12 @@
 @inject ItProjectAPI ItAPI
 @inject BlogPostAPI BlogAPI
 @inject NavigationManager NavManager
+@inject IJSRuntime JSRuntime
 
 @page "/posts/{type}/{guid}"
 <PageTitle>Post - @guid</PageTitle>
 
-<RadzenCard Style="padding: 2rem; background: rgba(50, 50, 50, 0.5); min-width: 50vw;">
+<RadzenCard Style="padding: 2rem; background: rgba(50, 50, 50, 0.5); min-width: 50vw; padding-bottom: 4rem;">
     @if (null != post)
     {
         <RadzenStack>
@@ -23,8 +24,11 @@
                     <Items>
                         @foreach (var img in post.Images)
                         {
-                            <RadzenCarouselItem style="max-height: 33vh">
-                                <img src=@img.RemotePath style="max-width: 75%; max-height: 30vh; height: auto; width: auto; border-style: solid; border-color: deeppink; border-width: 1px; box-shadow: deeppink 5px 5px;" />
+                            <RadzenCarouselItem style="max-height: 33vh; justify-content: center; align-content: center;">
+                                <div style="position: relative; max-width: 75%; max-height: 30vh; height: auto; width: auto; overflow-y: clip;">
+                                    <RadzenIcon Icon="open_in_new" onclick="@(() => OpenImage(img.RemotePath))" Style="position: absolute; top: 1rem; right: 2rem;" class="icon_button" />
+                                    <img src=@img.RemotePath style="max-height: 33vh; max-width: 99%; height: auto; width: auto; border-style: solid; border-color: deeppink; border-width: 1px; box-shadow: deeppink 5px 5px;" />
+                                </div>
                             </RadzenCarouselItem>
                         }
                     </Items>
@@ -35,10 +39,8 @@
 </RadzenCard>
 
 @code {
-    [Parameter]
-    required public string type { get; set; }
-    [Parameter]
-    required public string guid { get; set; }
+    [Parameter] required public string type { get; set; }
+    [Parameter] required public string guid { get; set; }
 
     IWebsitePost? post;
 
@@ -58,5 +60,10 @@
         }
         await base.OnParametersSetAsync();
         StateHasChanged();
+    }
+
+    async Task OpenImage(string remotePath)
+    {
+        await JSRuntime.InvokeAsync<object>("open", remotePath, "_blank");
     }
 }
