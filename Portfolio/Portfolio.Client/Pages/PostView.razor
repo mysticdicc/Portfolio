@@ -6,7 +6,7 @@
 @inject NavigationManager NavManager
 @inject IJSRuntime JS
 
-@page "/posts/{type}/"
+@page "/posts/{type}"
 <PageTitle>Posts - @type</PageTitle>
 
 <AuthorizeView>
@@ -25,9 +25,9 @@
                         <RadzenTextArea @bind-Value="@newBody" Style="height: 10rem;" />
                     </RadzenFormField>
                     <RadzenStack Orientation="Orientation.Horizontal">
-                        @foreach (string base64img in newPictures)
+                        @foreach (var img in newPictures)
                         {
-                            <img src=@base64img style="width: 8rem; height: 8rem; border-style: solid; border-color: deeppink; border-width: 1px; box-shadow: deeppink 5px 5px;" />
+                            <img src=@img.RemotePath style="width: 8rem; height: 8rem; border-style: solid; border-color: deeppink; border-width: 1px; box-shadow: deeppink 5px 5px;" />
                         }
                         <div style="width: 8rem; height: 8rem; border-style: dashed; border-color: grey; border-width: 1px; position: relative; display: flex; justify-content: center; align-content: center;">
                             <label for="pictureupload">
@@ -77,13 +77,13 @@
                                     </RadzenFormField>
                                     <RadzenStack Orientation="Orientation.Horizontal">
 
-                                        @if (post.Base64Images.Count != 0)
+                                        @if (post.Images.Count != 0)
                                         {
-                                            foreach (string base64img in post.Base64Images)
+                                            foreach (var img in post.Images)
                                             {
                                                 <div style="width: 8rem; height: 8rem; position: relative;">
-                                                    <img src=@base64img style="width: 8rem; height: 8rem; border-style: solid; border-color: deeppink; border-width: 1px; box-shadow: deeppink 5px 5px;" />
-                                                    <RadzenButton Icon="delete" Style="position: absolute; top: 0; right: 0;" Size="ButtonSize.ExtraSmall" Click="@(() => DeleteImage(post, base64img))" />
+                                                    <img src=@img.RemotePath style="width: 8rem; height: 8rem; border-style: solid; border-color: deeppink; border-width: 1px; box-shadow: deeppink 5px 5px;" />
+                                                    <RadzenButton Icon="delete" Style="position: absolute; top: 0; right: 0;" Size="ButtonSize.ExtraSmall" Click="@(() => DeleteImage(post, img))" />
                                                 </div>
                                             }
                                         }
@@ -141,111 +141,99 @@ else
     required public string type { get; set; }
 
     async Task<List<IWebsitePost>> GetAll() {
+        Console.WriteLine($"Fetching {type} posts");
         var posts = new List<IWebsitePost>();
 
-        if (type == "blog") 
+        try 
         {
-            var list = await BlogAPI.GetAll();
-            posts.AddRange(list);
-        }
-
-        if (type == "dev")
+            switch (type)
+            {
+                case "blog":
+                    var blog = await BlogAPI.GetAll();
+                    posts.AddRange(blog);
+                    break;
+                case "dev":
+                    var dev = await DevAPI.GetAll();
+                    posts.AddRange(dev);
+                    break;
+                case "it":
+                    var it = await ItAPI.GetAll();
+                    posts.AddRange(it);
+                    break;
+            }
+        } 
+        catch(Exception ex)
         {
-            var list = await DevAPI.GetAll();
-            posts.AddRange(list);
-        }
-
-        if (type == "it")
-        {
-            var list = await ItAPI.GetAll();
-            posts.AddRange(list);
+            Console.WriteLine(ex.Message);
         }
 
         return posts;
     }
 
-    async Task AddPost(string title, string body, DateTime lastSubmit, List<string>base64images) {
-        if (type == "blog")
+    async Task AddPost(string title, string body, List<Image>? images) {
+        switch (type)
         {
-            BlogPost newPost = new BlogPost
+            case "blog":
+                BlogPost blogPost = new BlogPost(title, body);
+
+                if (newPictures.Count != 0)
                 {
-                    Title = title,
-                    Body = body,
-                    LastSubmit = lastSubmit,
-                    Base64Images = base64images
-                };
+                    blogPost.Images = newPictures;
+                }
 
-            if (newPictures.Count != 0)
-            {
-                newPost.Base64Images = newPictures;
-            }
+                await BlogAPI.AddPost(blogPost);
+                break;
 
-            await BlogAPI.AddPost(newPost);
-        }
+            case "dev":
+                DevProjectPost devPost = new DevProjectPost(title, body);
 
-        if (type == "dev")
-        {
-            DevProjectPost newPost = new DevProjectPost
+                if (newPictures.Count != 0)
                 {
-                    Title = title,
-                    Body = body,
-                    LastSubmit = lastSubmit,
-                    Base64Images = base64images
-                };
+                    devPost.Images = newPictures;
+                }
 
-            if (newPictures.Count != 0)
-            {
-                newPost.Base64Images = newPictures;
-            }
+                await DevAPI.AddPost(devPost);
+                break;
 
-            await DevAPI.AddPost(newPost);
-        }
+            case "it":
+                ItProjectPost itPost = new ItProjectPost(title, body);
 
-        if (type == "it")
-        {
-            ItProjectPost newPost = new ItProjectPost
+                if (newPictures.Count != 0)
                 {
-                    Title = title,
-                    Body = body,
-                    LastSubmit = lastSubmit,
-                    Base64Images = base64images
-                };
+                    itPost.Images = newPictures;
+                }
 
-            await ItAPI.AddPost(newPost);
+                await ItAPI.AddPost(itPost);
+                break;
         }
     }
 
     async Task UpdatePost(IWebsitePost post) {
-        if (type == "blog")
+        switch (type)
         {
-            await BlogAPI.UpdatePost((BlogPost)post);
-        }
-
-        if (type == "dev")
-        {
-            await DevAPI.UpdatePost((DevProjectPost)post);
-        }
-
-        if (type == "it")
-        {
-            await ItAPI.UpdatePost((ItProjectPost)post);
+            case "blog":
+                await BlogAPI.UpdatePost((BlogPost)post);
+                break;
+            case "dev":
+                await DevAPI.UpdatePost((DevProjectPost)post);
+                break;
+            case "it":
+                await ItAPI.UpdatePost((ItProjectPost)post);
+                break;
         }
     }
 
     async Task DeletePost(Guid id) {
-        if (type == "blog")
-        {
-            await BlogAPI.DeletePost(id);
-        }
-
-        if (type == "dev")
-        {
-            await DevAPI.DeletePost(id);
-        }
-
-        if (type == "it")
-        {
-            await ItAPI.DeletePost(id);
+        switch (type) {
+            case "blog":
+                await BlogAPI.DeletePost(id);
+                break;
+            case "dev":
+                await DevAPI.DeletePost(id);
+                break;
+            case "it":
+                await ItAPI.DeletePost(id);
+                break;
         }
     }
 
@@ -255,11 +243,10 @@ else
 
     string? newTitle;
     string? newBody;
-    List<string> newPictures = new List<string>();
+    List<Image> newPictures = [];
 
     async protected override Task OnParametersSetAsync()
     {
-        Console.WriteLine($"Multi post view - {type}");
         await Refresh();
         await base.OnParametersSetAsync();
         StateHasChanged();
@@ -275,6 +262,7 @@ else
         } 
         catch 
         {
+            Console.WriteLine("Empty list generated as no posts");
             posts = new List<IWebsitePost>();
         }
 
@@ -292,11 +280,11 @@ else
     {
         if (null != newTitle && null != newBody)
         {
-            await AddPost(newTitle, newBody, DateTime.Now, newPictures);
+            await AddPost(newTitle, newBody, newPictures);
 
             newTitle = null;
             newBody = null;
-            newPictures = new List<string>();
+            newPictures = [];
             newPostFormHidden = true;
             await Refresh();
         }
@@ -316,14 +304,21 @@ else
 
     async void UploadPicture(InputFileChangeEventArgs eventArgs)
     {
-        var base64 = await Image.ConvertToBase64(eventArgs.File.OpenReadStream(10000000));
-        newPictures.Add($"data:{eventArgs.File.ContentType};base64,{base64}");
+        var name = eventArgs.File.Name.Split('.')[0];
+        var ext = eventArgs.File.Name.Split('.')[1];
+        var image = new Image(name, ext);
+        image.Base64String = await Image.ConvertToBase64(eventArgs.File.OpenReadStream(10000000));
+
+        newPictures.Add(image);
         StateHasChanged();
     }
 
     async void UploadPictureExisting(InputFileChangeEventArgs eventArgs, Guid guid)
     {
-        var base64 = await Image.ConvertToBase64(eventArgs.File.OpenReadStream(10000000));
+        var name = eventArgs.File.Name.Split('.')[0];
+        var ext = eventArgs.File.Name.Split('.')[1];
+        var image = new Image(name, ext);
+        image.Base64String = await Image.ConvertToBase64(eventArgs.File.OpenReadStream(10000000));
 
         if (posts != null)
         {
@@ -331,12 +326,7 @@ else
 
             if (null != post)
             {
-                if (null == post.Base64Images)
-                {
-                    post.Base64Images = new List<string>();
-                }
-
-                post.Base64Images.Add($"data:{eventArgs.File.ContentType};base64,{base64}");
+                post.Images.Add(image);
                 StateHasChanged();
             }
         }
@@ -368,14 +358,14 @@ else
         }
     }
 
-    void DeleteImage(IWebsitePost post, string base64)
+    void DeleteImage(IWebsitePost post, Image image)
     {
-        post.Base64Images.Remove(base64);
+        post.Images.Remove(image);
     }
 
     void OpenPost(string guid) 
     {
-        NavManager.NavigateTo($"/posts/{type}/{guid}/");
+        NavManager.NavigateTo($"/posts/{type}/{guid}");
     }
 
     string SplitPostBody(string body) 

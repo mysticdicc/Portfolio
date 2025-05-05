@@ -1,9 +1,14 @@
-﻿using System;
+﻿using PortfolioClassLibrary.Classes.Abstract;
+using PortfolioClassLibrary.Classes.Blog;
+using PortfolioClassLibrary.Classes.DevProjects;
+using PortfolioClassLibrary.Classes.ItProjects;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace PortfolioClassLibrary.Classes.Images
@@ -17,8 +22,11 @@ namespace PortfolioClassLibrary.Classes.Images
         public string LocalPath { get; set; }
         public string RemotePath { get; set; }
         public string FileExtension { get; set; }
-        [NotMapped]
-        public string? Base64String { get; set; }
+        [NotMapped] public string? Base64String { get; set; }
+        public Guid? PostId { get; set; }
+        [JsonIgnore] public BlogPost? BlogPost { get; set; }
+        [JsonIgnore] public DevProjectPost? DevProjectPost { get; set; }
+        [JsonIgnore] public ItProjectPost? ItProjectPost { get; set; }
 
         public Image(string name, string fileExtension)
         {

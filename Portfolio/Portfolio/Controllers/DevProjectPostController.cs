@@ -7,6 +7,7 @@ using PortfolioClassLibrary.Classes.DevProjects;
 using Portfolio.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using PortfolioClassLibrary.Classes.Images;
 
 namespace Portfolio.Controllers
 {
@@ -25,7 +26,8 @@ namespace Portfolio.Controllers
         public string GetAll()
         {
             using var db = _PortfolioFactory.CreateDbContext();
-            return JsonConvert.SerializeObject(db.DevProjects.ToList());
+            return JsonConvert.SerializeObject(db.DevProjects.Include(x => x.Images).ToList(), 
+                Formatting.Indented, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
         }
 
         [HttpGet]
@@ -34,7 +36,8 @@ namespace Portfolio.Controllers
         {
             using var db = _PortfolioFactory.CreateDbContext();
             var realGuid = new Guid(id);
-            return JsonConvert.SerializeObject(db.DevProjects.Where(x => x.ID == realGuid).FirstOrDefault());
+            return JsonConvert.SerializeObject(db.DevProjects.Where(x => x.ID == realGuid).Include(x => x.Images).FirstOrDefault(),
+                Formatting.Indented, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
         }
 
         [HttpPost]
@@ -44,25 +47,26 @@ namespace Portfolio.Controllers
         {
             using var db = _PortfolioFactory.CreateDbContext();
 
-            bool validObject = true;
-
-            if (validObject)
+            try
             {
-                try
+                foreach (Image image in post.Images)
                 {
-                    db.DevProjects.Add(post);
-                    await db.SaveChangesAsync();
-
-                    return TypedResults.Created(post.ID.ToString(), post);
-                } 
-                catch(Exception ex)
-                {
-                    return TypedResults.BadRequest(ex.Message);
+                    if (null != image.Base64String)
+                    {
+                        await Image.SaveToFile(image.Base64String, image.LocalPath);
+                        image.PostId = post.ID;
+                        db.Images.Add(image);
+                    }
                 }
-            } 
-            else
+
+                db.DevProjects.Add(post);
+                await db.SaveChangesAsync();
+
+                return TypedResults.Created(post.ID.ToString(), post);
+            }
+            catch (Exception ex)
             {
-                return TypedResults.BadRequest("Object invalid");
+                return TypedResults.BadRequest(ex.Message);
             }
         }
 
@@ -84,10 +88,20 @@ namespace Portfolio.Controllers
                     existingPost.Title = post.Title;
                     existingPost.Body = post.Body;
                     existingPost.LastSubmit = DateTime.Now;
-                    existingPost.Base64Images = post.Base64Images;
+                    existingPost.Images = post.Images;
 
                     try
                     {
+                        foreach (Image image in post.Images)
+                        {
+                            if (null != image.Base64String)
+                            {
+                                await Image.SaveToFile(image.Base64String, image.LocalPath);
+                                image.PostId = post.ID;
+                                db.Images.Add(image);
+                            }
+                        }
+
                         await db.SaveChangesAsync();
 
                         return TypedResults.Ok(existingPost);

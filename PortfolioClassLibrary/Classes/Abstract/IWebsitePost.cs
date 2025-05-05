@@ -5,8 +5,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PortfolioClassLibrary.Classes.Images;
 
-namespace PortfolioClassLibrary.Classes.Interfaces
+namespace PortfolioClassLibrary.Classes.Abstract
 {
     public interface IWebsitePost
     {
@@ -16,6 +17,6 @@ namespace PortfolioClassLibrary.Classes.Interfaces
         public string Title { get; set; }
         public string Body { get; set; }
         public DateTime LastSubmit { get; set; }
-        public List<string> Base64Images { get; set; }
+        public List<Image> Images { get; set; }
     }
 }

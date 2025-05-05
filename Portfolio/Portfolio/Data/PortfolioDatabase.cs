@@ -40,7 +40,11 @@ namespace Portfolio.Data
                     .HasMaxLength(100)
                     .IsUnicode(false)
                     .IsRequired();
-                entity.Property(e => e.Base64Images);
+
+                entity.HasMany(e => e.Images)
+                    .WithOne(e => e.DevProjectPost)
+                    .HasForeignKey(e => e.PostId)
+                    .IsRequired(false);
             });
 
             modelBuilder.Entity<ItProjectPost>(entity =>
@@ -57,7 +61,11 @@ namespace Portfolio.Data
                     .HasMaxLength(100)
                     .IsUnicode(false)
                     .IsRequired();
-                entity.Property(e => e.Base64Images);
+
+                entity.HasMany(e => e.Images)
+                    .WithOne(e => e.ItProjectPost)
+                    .HasForeignKey(e => e.PostId)
+                    .IsRequired(false);
             });
 
             modelBuilder.Entity<BlogPost>(entity =>
@@ -74,7 +82,12 @@ namespace Portfolio.Data
                     .HasMaxLength(100)
                     .IsUnicode(false)
                     .IsRequired();
-                entity.Property(e => e.Base64Images);
+
+
+                entity.HasMany(e => e.Images)
+                    .WithOne(e => e.BlogPost)
+                    .HasForeignKey(e => e.PostId)
+                    .IsRequired(false);
             });
 
             modelBuilder.Entity<Image>(entity =>

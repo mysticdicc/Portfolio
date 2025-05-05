@@ -2,9 +2,11 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Portfolio.Data;
 using PortfolioClassLibrary.Classes.Blog;
+using PortfolioClassLibrary.Classes.Images;
 
 namespace Portfolio.Controllers
 {
@@ -23,7 +25,8 @@ namespace Portfolio.Controllers
         public string GetAll()
         {
             using var db = _PortfolioFactory.CreateDbContext();
-            return JsonConvert.SerializeObject(db.BlogPosts.ToList());
+            return JsonConvert.SerializeObject(db.BlogPosts.Include(x => x.Images).ToList(),
+                Formatting.Indented, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
         }
 
         [HttpGet]
@@ -32,7 +35,8 @@ namespace Portfolio.Controllers
         {
             using var db = _PortfolioFactory.CreateDbContext();
             var realGuid = new Guid(id);
-            return JsonConvert.SerializeObject(db.BlogPosts.Where(x => x.ID == realGuid).FirstOrDefault());
+            return JsonConvert.SerializeObject(db.BlogPosts.Where(x => x.ID == realGuid).Include(x => x.Images).FirstOrDefault(),
+                Formatting.Indented, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
         }
 
         [HttpPost]
@@ -42,26 +46,28 @@ namespace Portfolio.Controllers
         {
             using var db = _PortfolioFactory.CreateDbContext();
 
-            bool validObject = true;
-
-            if (validObject)
+            try
             {
-                try
+                foreach (Image image in post.Images)
                 {
-                    db.BlogPosts.Add(post);
-                    await db.SaveChangesAsync();
+                    if (null != image.Base64String)
+                    {
+                        await Image.SaveToFile(image.Base64String, image.LocalPath);
+                        image.PostId = post.ID;
+                        db.Images.Add(image);
+                    }
+                }
 
-                    return TypedResults.Created(post.ID.ToString(), post);
-                }
-                catch (Exception ex)
-                {
-                    return TypedResults.BadRequest(ex.Message);
-                }
+                db.BlogPosts.Add(post);
+                await db.SaveChangesAsync();
+
+                return TypedResults.Created(post.ID.ToString(), post);
             }
-            else
+            catch (Exception ex)
             {
-                return TypedResults.BadRequest("Object invalid");
+                return TypedResults.BadRequest(ex.Message);
             }
+
         }
 
         [HttpPost]
@@ -71,38 +77,39 @@ namespace Portfolio.Controllers
         {
             using var db = _PortfolioFactory.CreateDbContext();
 
-            bool validObject = true;
+            var existingPost = db.BlogPosts.Find(post.ID);
 
-            if (validObject)
+            if (null != existingPost)
             {
-                var existingPost = db.BlogPosts.Find(post.ID);
+                existingPost.Title = post.Title;
+                existingPost.Body = post.Body;
+                existingPost.LastSubmit = DateTime.Now;
+                existingPost.Images = post.Images;
 
-                if (null != existingPost)
+                try
                 {
-                    existingPost.Title = post.Title;
-                    existingPost.Body = post.Body;
-                    existingPost.LastSubmit = DateTime.Now;
-                    existingPost.Base64Images = post.Base64Images;
-
-                    try
+                    foreach (Image image in post.Images)
                     {
-                        await db.SaveChangesAsync();
+                        if (null != image.Base64String)
+                        {
+                            await Image.SaveToFile(image.Base64String, image.LocalPath);
+                            image.PostId = post.ID;
+                            db.Images.Add(image);
+                        }
+                    }
 
-                        return TypedResults.Ok(existingPost);
-                    }
-                    catch (Exception ex)
-                    {
-                        return TypedResults.BadRequest(ex.Message);
-                    }
+                    await db.SaveChangesAsync();
+
+                    return TypedResults.Ok(existingPost);
                 }
-                else
+                catch (Exception ex)
                 {
-                    return TypedResults.BadRequest($"Cannot find post with {post.ID}");
+                    return TypedResults.BadRequest(ex.Message);
                 }
             }
             else
             {
-                return TypedResults.BadRequest("Object invalid");
+                return TypedResults.BadRequest($"Cannot find post with {post.ID}");
             }
         }
 
@@ -122,6 +129,14 @@ namespace Portfolio.Controllers
                 {
                     try
                     {
+                        foreach (Image image in item.Images)
+                        {
+                            if (null != image.Base64String)
+                            {
+                                await Image.DeleteFile(image.LocalPath);
+                            }
+                        }
+
                         db.BlogPosts.Remove(item);
                         await db.SaveChangesAsync();
 

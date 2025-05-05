@@ -5,18 +5,18 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using PortfolioClassLibrary.Classes.Interfaces;
+using PortfolioClassLibrary.Classes.Abstract;
+using PortfolioClassLibrary.Classes.Images;
+using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 
 namespace PortfolioClassLibrary.Classes.Blog
 {
-    public class BlogPost : IWebsitePost
+    public class BlogPost : BaseWebsitePost, IWebsitePost
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid ID { get; set; }
-        required public string Title { get; set; }
-        required public string Body { get; set; }
-        required public DateTime LastSubmit { get; set; }
-        required public List<string> Base64Images { get; set; }
+        public BlogPost(string title, string body, List<Image> images) : base(title, body, images) { }
+        public BlogPost(string title, string body) : base(title, body) { }
+
+        [JsonConstructor] public BlogPost(Guid ID, string Title, string Body, DateTime LastSubmit, List<Image> Images) : base(ID, Title, Body, LastSubmit, Images) { }
     }
 }

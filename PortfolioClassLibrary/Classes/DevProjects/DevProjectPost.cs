@@ -5,18 +5,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using PortfolioClassLibrary.Classes.Interfaces;
+using PortfolioClassLibrary.Classes.Abstract;
+using PortfolioClassLibrary.Classes.Images;
+using System.Text.Json.Serialization;
 
 namespace PortfolioClassLibrary.Classes.DevProjects
 {
-    public class DevProjectPost : IWebsitePost
+    public class DevProjectPost : BaseWebsitePost, IWebsitePost
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid ID { get; set; }
-        required public string Title { get; set; }
-        required public string Body { get; set; }
-        required public DateTime LastSubmit { get; set; }
-        required public List<string> Base64Images { get; set; }
+        public DevProjectPost(string title, string body, List<Image> images) : base(title, body, images) { }
+        public DevProjectPost(string title, string body) : base(title, body) { }
+
+        [JsonConstructor] public DevProjectPost(Guid ID, string Title, string Body, DateTime LastSubmit, List<Image> Images) : base(ID, Title, Body, LastSubmit, Images) { }
     }
 }

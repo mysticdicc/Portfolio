@@ -3,7 +3,7 @@
 @inject BlogPostAPI BlogAPI
 @inject NavigationManager NavManager
 
-@page "/posts/{type}/{guid}/"
+@page "/posts/{type}/{guid}"
 <PageTitle>Post - @guid</PageTitle>
 
 <RadzenCard Style="padding: 2rem; background: rgba(50, 50, 50, 0.5); min-width: 50vw;">
@@ -17,14 +17,14 @@
                 <RadzenMarkdown TextStyle="TextStyle.H6">@post.Body</RadzenMarkdown>
             </RadzenRow>
 
-            @if (post.Base64Images.Count != 0)
+            @if (post.Images.Count != 0)
             {
                 <RadzenCarousel style="max-height: 33vh; width: 100%; padding-top: 1rem; padding-bottom: 1rem;">
                     <Items>
-                        @foreach (string base64img in post.Base64Images)
+                        @foreach (var img in post.Images)
                         {
                             <RadzenCarouselItem style="max-height: 33vh">
-                                <img src=@base64img style="max-width: 75%; max-height: 30vh; height: auto; width: auto; border-style: solid; border-color: deeppink; border-width: 1px; box-shadow: deeppink 5px 5px;" />
+                                <img src=@img.RemotePath style="max-width: 75%; max-height: 30vh; height: auto; width: auto; border-style: solid; border-color: deeppink; border-width: 1px; box-shadow: deeppink 5px 5px;" />
                             </RadzenCarouselItem>
                         }
                     </Items>
@@ -44,8 +44,6 @@
 
     async protected override Task OnParametersSetAsync()
     {
-        Console.WriteLine($"Single post view: {guid} @ {type}");
-
         switch (type)
         {
             case "blog":
