@@ -1,0 +1,61 @@
+﻿@inject DevProjectAPI DevAPI
+@inject ItProjectAPI ItAPI
+@inject BlogPostAPI BlogAPI
+@inject NavigationManager NavManager
+@inject IJSRuntime JSRuntime
+
+@page "/posts/{type}/{guid}"
+<PageTitle>Post - @guid</PageTitle>
+
+<RadzenCard Style="padding: 2rem; background: rgba(50, 50, 50, 0.5); min-width: 50vw; padding-bottom: 4rem;">
+    @if (null != post)
+    {
+        <PostEditor Hidden="@editHidden" HiddenChanged="@PostEditorEventCallback" Post="@post" PostType="@type" />
+        <PostView Hidden="@(!editHidden)" HiddenChanged="@PostEditorEventCallback" Post="@post" PostType="@type" ShortPost="false" />
+    }
+</RadzenCard>
+
+@code {
+    [Parameter] required public string type { get; set; }
+    [Parameter] required public string guid { get; set; }
+
+    bool editHidden;
+    IWebsitePost? post;
+
+    async protected override Task OnParametersSetAsync()
+    {
+        editHidden = true;
+        await Refresh();
+        await base.OnParametersSetAsync();
+        
+    }
+
+    async Task Refresh()
+    {
+        switch (type)
+        {
+            case "blog":
+                post = await BlogAPI.GetById(guid);
+                break;
+            case "dev":
+                post = await DevAPI.GetById(guid);
+                break;
+            case "it":
+                post = await ItAPI.GetById(guid);
+                break;
+        }
+
+        StateHasChanged();
+    }
+
+    async Task PostEditorEventCallback(bool callback)
+    {
+        editHidden = callback;
+        await Refresh();
+    }
+
+    async Task OpenImage(string remotePath)
+    {
+        await JSRuntime.InvokeAsync<object>("open", remotePath, "_blank");
+    }
+}

@@ -79,7 +79,7 @@ namespace Portfolio.Controllers
 
             if (validObject)
             {
-                var existingPost = db.ItProjects.Find(post.ID);
+                var existingPost = await db.ItProjects.Include(x => x.Images).Where(x => x.ID == post.ID).FirstOrDefaultAsync();
 
                 if (null != existingPost)
                 {
@@ -87,13 +87,13 @@ namespace Portfolio.Controllers
                     existingPost.Body = post.Body;
                     existingPost.LastSubmit = DateTime.Now;
 
-                    var removeImages = existingPost.Images.Except(post.Images).ToList();
+                    List<Guid> imageIds = post.Images.Select(x => x.Id).ToList();
 
                     try
                     {
-                        if (null != removeImages)
+                        foreach (Image image in existingPost.Images)
                         {
-                            foreach (Image image in removeImages)
+                            if (!imageIds.Contains(image.Id))
                             {
                                 await Image.DeleteFile(image.LocalPath);
                                 db.Images.Remove(image);
@@ -110,7 +110,6 @@ namespace Portfolio.Controllers
                             }
                         }
 
-                        existingPost.Images = post.Images;
                         await db.SaveChangesAsync();
 
                         return TypedResults.Ok(existingPost);
@@ -141,7 +140,7 @@ namespace Portfolio.Controllers
 
             if (guid != null)
             {
-                var item = db.ItProjects.FirstOrDefault(x => x.ID == guid);
+                var item = await db.ItProjects.Include(x => x.Images).Where(x => x.ID == guid).FirstOrDefaultAsync();
 
                 if (item != null)
                 {
@@ -149,15 +148,12 @@ namespace Portfolio.Controllers
                     {
                         foreach (Image image in item.Images)
                         {
-                            if (null != image.Base64String)
-                            {
-                                await Image.DeleteFile(image.LocalPath);
-                                var dbImage = db.Images.Find(image.Id);
+                            await Image.DeleteFile(image.LocalPath);
+                            var dbImage = db.Images.Find(image.Id);
 
-                                if (null != dbImage)
-                                {
-                                    db.Images.Remove(dbImage);
-                                }
+                            if (null != dbImage)
+                            {
+                                db.Images.Remove(dbImage);
                             }
                         }
 

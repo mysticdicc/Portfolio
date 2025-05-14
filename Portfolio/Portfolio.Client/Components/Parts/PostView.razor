@@ -1,0 +1,78 @@
+﻿@inject NavigationManager NavManager
+@inject IJSRuntime JSRuntime
+
+<div style="width: 100%;" hidden="@Hidden">
+    <RadzenRow>
+        <RadzenText TextStyle="TextStyle.H3">@Post.Title</RadzenText>
+    </RadzenRow>
+    <RadzenRow>
+        @if (ShortPost)
+        {
+            <RadzenMarkdown TextStyle="TextStyle.H6">@SplitPostBody(Post.Body)</RadzenMarkdown>
+        }
+        else
+        {
+            <RadzenMarkdown TextStyle="TextStyle.H6">@Post.Body</RadzenMarkdown>
+        }
+    </RadzenRow>
+    <RadzenRow Style="display: flex; flex-direction: row;">
+        @if (ShortPost) 
+        {
+            <RadzenButton Icon="arrow_forward" Click="(() => OpenPost(Post.ID.ToString()))" Style="margin-left: auto; margin-right: 0;" Text="Read More" />
+        }
+        else
+        {
+            @if (Post.Images.Count != 0)
+            {
+                <RadzenCarousel class="caro">
+                    <Items>
+                        @foreach (var img in Post.Images)
+                        {
+                            <RadzenCarouselItem class="caro_item">
+                                <div class="caro_image_container">
+                                    <RadzenIcon Icon="open_in_new" onclick="@(() => OpenImage(img.RemotePath))" Style="position: absolute; top: 1rem; right: 2rem;" class="icon_button" />
+                                    <img src=@img.RemotePath class="caro_image"/>
+                                </div>
+                            </RadzenCarouselItem>
+                        }
+                    </Items>
+                </RadzenCarousel>
+            }
+        }
+    </RadzenRow>
+</div>
+
+
+@code {
+    [Parameter] public required bool Hidden { get; set; }
+    [Parameter] public required EventCallback<bool> HiddenChanged { get; set; }
+
+    [Parameter] public required bool ShortPost { get; set; }
+    [Parameter] public required string PostType { get; set; }
+    [Parameter] public required IWebsitePost Post { get; set; }
+
+
+    string SplitPostBody(string body)
+    {
+        string[] words = body.Split(' ');
+
+        if (words.Length > 100)
+        {
+            return (string.Join(' ', words, 0, 100) + "...");
+        }
+        else
+        {
+            return body;
+        }
+    }
+
+    void OpenPost(string guid)
+    {
+        NavManager.NavigateTo($"/posts/{PostType}/{guid}");
+    }
+
+    async Task OpenImage(string remotePath)
+    {
+        await JSRuntime.InvokeAsync<object>("open", remotePath, "_blank");
+    }
+}

@@ -1,0 +1,153 @@
+﻿@inject DevProjectAPI DevAPI
+@inject ItProjectAPI ItAPI
+@inject BlogPostAPI BlogAPI
+
+<AuthorizeView>
+    <Authorized>
+        <RadzenCard Style="margin-bottom: 2rem;" hidden="@Hidden">
+            <RadzenStack Orientation="Orientation.Vertical">
+                <RadzenFormField Text="Title">
+                    <RadzenTextBox @bind-Value="@Post.Title" />
+                </RadzenFormField>
+                <RadzenFormField Text="Body">
+                    <RadzenTextArea @bind-Value="@Post.Body" Style="height: 10rem;" />
+                </RadzenFormField>
+                <RadzenStack Orientation="Orientation.Horizontal">
+                    @foreach (var img in existingImages)
+                    {
+                        <div style="position: relative">
+                            <RadzenIcon Icon="delete" onclick="@(() => DeleteImage(img))" Style="top: 1rem; right: 1rem; position: absolute;" class="icon_button" />
+                            <img src=@img.RemotePath class="edit_image" />
+                        </div>
+                    }
+                    @foreach (var img in newImagesBase64) 
+                    {
+                        <div style="position: relative;">
+                            <RadzenIcon Icon="delete" onclick="@(() => DeleteImage(img.Key))" Style="top: 1rem; right: 1rem; position: absolute;" class="icon_button" />
+                            <img src=@img.Value class="edit_image" />
+                        </div>
+                    }
+                    <div class="upload_image">
+                        <label for="pictureupload">
+                            <RadzenIcon Icon="add" Style="width: 100%; height: 100%;" />
+                        </label>
+                        <InputFile id="pictureupload" style="width: 0%; height: 0%; overflow: hidden;" onchange="@UploadPicture" accept=".png, .jpg, .jpeg" />
+                    </div>
+                </RadzenStack>
+                <RadzenButton Click="@OnClickSubmit">
+                    Submit
+                </RadzenButton>
+            </RadzenStack>
+        </RadzenCard>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    [Parameter] public required IWebsitePost Post { get; set; }
+    [Parameter] public required string PostType { get; set; }
+
+    [Parameter] public required bool Hidden { get; set; }
+    [Parameter] public required EventCallback<bool> HiddenChanged { get; set; }
+
+    private bool newPost;
+    private List<Image> newImages = [];
+    private List<Image> existingImages = [];
+    private Dictionary<Guid, string> newImagesBase64 = [];
+
+    protected override Task OnParametersSetAsync()
+    {
+        if (String.Empty == (Post.Body ?? Post.Title)) 
+        {
+            newPost = true;
+        }
+        else
+        {
+            newPost = false;
+            existingImages = Post.Images;
+        }
+
+        return base.OnParametersSetAsync();
+    }
+
+    async Task AddPost(IWebsitePost websitePost)
+    {
+        if (newImages.Count != 0)
+        {
+            websitePost.Images.AddRange(newImages);
+        }
+
+        switch (PostType)
+        {
+            case "blog":
+                await BlogAPI.AddPost(new BlogPost(websitePost));
+                break;
+
+            case "dev":
+                await DevAPI.AddPost(new DevProjectPost(websitePost));
+                break;
+
+            case "it":
+                await ItAPI.AddPost(new ItProjectPost(websitePost));
+                break;
+        }
+    }
+
+    async Task UpdatePost(IWebsitePost websitePost)
+    {
+        switch (PostType)
+        {
+            case "blog":
+                await BlogAPI.UpdatePost((BlogPost)websitePost);
+                break;
+            case "dev":
+                await DevAPI.UpdatePost((DevProjectPost)websitePost);
+                break;
+            case "it":
+                await ItAPI.UpdatePost((ItProjectPost)websitePost);
+                break;
+        }
+    }
+
+    async void UploadPicture(InputFileChangeEventArgs eventArgs)
+    {
+        var name = eventArgs.File.Name.Split('.')[0];
+        var ext = eventArgs.File.Name.Split('.')[1];
+        var image = new Image(name, ext);
+        string base64 = await Image.ConvertToBase64(eventArgs.File.OpenReadStream(10000000));
+        image.Base64String = base64;
+
+        newImagesBase64.Add(image.Id, $"data:{eventArgs.File.ContentType};base64, {base64}");
+        newImages.Add(image);
+        StateHasChanged();
+    }
+
+    async Task OnClickSubmit()
+    {
+        if (newPost)
+        {
+            await AddPost(Post);
+            await HiddenChanged.InvokeAsync(true);
+        }
+        else
+        {
+            await UpdatePost(Post);
+            await HiddenChanged.InvokeAsync(true);
+        }
+
+        newImagesBase64 = [];
+        newImages = [];
+    }
+
+    void DeleteImage(Image image) 
+    {
+        Post.Images.Remove(image);
+        StateHasChanged();
+    }
+
+    void DeleteImage(Guid id)
+    {
+        newImagesBase64.Remove(id);
+        newImages.Remove(newImages.Where(x => x.Id == id).First());
+        StateHasChanged();
+    }
+}

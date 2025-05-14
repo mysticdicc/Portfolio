@@ -1,0 +1,179 @@
+﻿@using System.Text.RegularExpressions
+
+@inject DevProjectAPI DevAPI
+@inject ItProjectAPI ItAPI
+@inject BlogPostAPI BlogAPI
+@inject NavigationManager NavManager
+@inject IJSRuntime JS
+
+@page "/posts/{type}"
+<PageTitle>Posts - @type</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+        <div style="padding-bottom: 1rem; display: flex;">
+            <RadzenButton Icon="add" Click="@ClickNew" style="margin-right: 0; margin-left: auto;" />
+        </div>
+
+        <PostEditor Hidden="@newPostFormHidden" HiddenChanged="@PostEditorEventCallback" Post="@(new BaseWebsitePost())" PostType="@type"/>
+    </Authorized>
+</AuthorizeView>
+
+
+@if (null != posts)
+{
+    <RadzenStack>
+        @foreach (IWebsitePost post in posts.OrderByDescending(x => x.LastSubmit))
+        {
+            <RadzenCard Style="padding: 2rem; background: rgba(50, 50, 50, 0.5); min-width: 50vw;">
+                <RadzenStack>
+                    <AuthorizeView>
+                        <Authorized>
+                            <RadzenRow>
+                                <RadzenButton Icon="delete" Click="@(() => ClickDelete(post.ID))" />
+                                <RadzenButton Icon="edit" Click="@(() => ClickEdit(post.ID))" />
+                                <RadzenText Style="margin-right: 0; margin-left: auto;">@post.ID.ToString()</RadzenText>
+                                <RadzenText Style="margin-right: 0; margin-left: 0;">@post.LastSubmit.ToString();</RadzenText>
+                            </RadzenRow>
+                        </Authorized>
+                    </AuthorizeView>
+
+                    <PostEditor Hidden="@editPostHiddenDict[post.ID]" HiddenChanged="@((e) => PostEditorEventCallback(e, post))" Post="@post" PostType="@type" />
+                    <PostView Hidden="@(!editPostHiddenDict[post.ID])" HiddenChanged="@((e) => PostEditorEventCallback(e, post))" Post="@post" PostType="@type" ShortPost="true"/>
+                </RadzenStack>
+            </RadzenCard>
+        }
+    </RadzenStack>
+}
+else
+{
+    <div style="justify-content: center; width: 100%; display: flex;">
+        <RadzenProgressBarCircular ShowValue="false" Mode="ProgressBarMode.Indeterminate" />
+    </div>
+}
+
+
+@code {
+    [Parameter]
+    required public string type { get; set; }
+
+    async Task<List<IWebsitePost>> GetAll() {
+        Console.WriteLine($"Fetching {type} posts");
+        var posts = new List<IWebsitePost>();
+
+        try 
+        {
+            switch (type)
+            {
+                case "blog":
+                    var blog = await BlogAPI.GetAll();
+                    posts.AddRange(blog);
+                    break;
+                case "dev":
+                    var dev = await DevAPI.GetAll();
+                    posts.AddRange(dev);
+                    break;
+                case "it":
+                    var it = await ItAPI.GetAll();
+                    posts.AddRange(it);
+                    break;
+            }
+        } 
+        catch(Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+
+        return posts;
+    }
+
+    async Task PostEditorEventCallback(bool callback)
+    {
+        newPostFormHidden = callback;
+        await Refresh();
+    }
+
+    async Task PostEditorEventCallback(bool callback, IWebsitePost websitePost)
+    {
+        editPostHiddenDict[websitePost.ID] = callback;
+        await Refresh();
+    }
+
+    async Task DeletePost(Guid id) {
+        switch (type) {
+            case "blog":
+                await BlogAPI.DeletePost(id);
+                break;
+            case "dev":
+                await DevAPI.DeletePost(id);
+                break;
+            case "it":
+                await ItAPI.DeletePost(id);
+                break;
+        }
+    }
+
+    bool newPostFormHidden = true;
+    List<IWebsitePost>? posts;
+    Dictionary<Guid, bool> editPostHiddenDict = new Dictionary<Guid, bool>();
+
+    async protected override Task OnParametersSetAsync()
+    {
+        await Refresh();
+        await base.OnParametersSetAsync();
+        StateHasChanged();
+    }
+
+    async Task Refresh()
+    {
+        posts = null;
+
+        try 
+        {
+            posts = await GetAll();
+        } 
+        catch 
+        {
+            Console.WriteLine("Empty list generated as no posts");
+            posts = new List<IWebsitePost>();
+        }
+
+        editPostHiddenDict = new Dictionary<Guid, bool>();
+
+        foreach (IWebsitePost post in posts)
+        {
+            editPostHiddenDict.Add(post.ID, true);
+        }
+
+        StateHasChanged();
+    }
+
+    void ClickNew()
+    {
+        newPostFormHidden = !newPostFormHidden;
+        StateHasChanged();
+    }
+
+    async void ClickDelete(Guid guid)
+    {
+        await DeletePost(guid);
+        await Refresh();
+    }
+
+    void ClickEdit(Guid guid)
+    {
+        if (editPostHiddenDict[guid])
+        {
+            editPostHiddenDict[guid] = false;
+        }
+        else
+        {
+            editPostHiddenDict[guid] = true;
+        }
+    }
+
+    void DeleteImage(IWebsitePost post, Image image)
+    {
+        post.Images.Remove(image);
+    }
+}

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace PortfolioClassLibrary.Classes.Abstract
 {
-    public class BaseWebsitePost
+    public class BaseWebsitePost : IWebsitePost
     {
         public Guid ID { get; set; }
         public string Title { get; set; }
@@ -29,6 +29,15 @@ namespace PortfolioClassLibrary.Classes.Abstract
             ID = Guid.NewGuid();
             Title = title;
             Body = body;
+            LastSubmit = DateTime.Now;
+            Images = [];
+        }
+
+        public BaseWebsitePost()
+        {
+            ID = new Guid();
+            Title = String.Empty;
+            Body = String.Empty;
             LastSubmit = DateTime.Now;
             Images = [];
         }

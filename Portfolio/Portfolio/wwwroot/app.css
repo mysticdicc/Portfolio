@@ -69,3 +69,57 @@ h1:focus {
     cursor: pointer;
     box-shadow: 2px 2px rgba(0, 0, 0, 0.2);
 }
+
+.edit_image {
+    width: 8rem;
+    height: 8rem;
+    border-style: solid;
+    border-color: deeppink;
+    border-width: 1px;
+    box-shadow: deeppink 5px 5px;
+}
+
+.upload_image {
+    width: 8rem;
+    height: 8rem;
+    border-style: dashed;
+    border-color: grey;
+    border-width: 1px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+}
+
+.caro {
+    max-height: 33vh;
+    width: 100%;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    height: fit-content;
+}
+
+.caro_item {
+    max-height: 33vh;
+    justify-content: center;
+    align-content: center;
+    height: auto;
+    width: 100%;
+}
+
+.caro_image_container {
+    position: relative;
+    max-height: 30vh;
+    height: fit-content;
+    width: auto;
+}
+
+.caro_image {
+    max-height: 30vh;
+    height: auto;
+    border-style: solid;
+    border-color: deeppink;
+    border-width: 1px;
+    box-shadow: deeppink 5px 5px;
+}
+

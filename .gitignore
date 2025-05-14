@@ -367,3 +367,5 @@ FodyWeavers.xsd
 /Portfolio/Portfolio/appsettings.json
 /Portfolio/Portfolio/appsettings.json
 /Portfolio/Portfolio/appsettings.Development.json
+/Portfolio/Portfolio.Client/wwwroot/appsettings.json
+/Portfolio/Portfolio.Client/wwwroot/appsettings.Development.json

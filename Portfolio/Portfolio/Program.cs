@@ -33,7 +33,7 @@ builder.Services.AddRadzenCookieThemeService(options =>
 builder.Services.AddScoped(sp =>
 {
     NavigationManager navigation = sp.GetRequiredService<NavigationManager>();
-    return new HttpClient { BaseAddress = new Uri("https://portfolio.danknet.uk/") };
+    return new HttpClient { BaseAddress = new Uri(builder.Configuration.GetValue<string>("ApiBaseAddress")!) };
 });
 builder.Services.AddHttpClient();
 
