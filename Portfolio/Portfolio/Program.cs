@@ -12,6 +12,7 @@ using PortfolioClassLibrary.Classes.Blog;
 using PortfolioClassLibrary.Classes.DevProjects;
 using PortfolioClassLibrary.Classes.Images;
 using PortfolioClassLibrary.Classes.ItProjects;
+using Portfolio.Client.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,17 +31,16 @@ builder.Services.AddRadzenCookieThemeService(options =>
     options.Duration = TimeSpan.FromDays(365);
 });
 
+var baseAddress = new Uri(builder.Configuration.GetValue<string>("ApiBaseAddress")!);
+
 builder.Services.AddScoped(sp =>
 {
     NavigationManager navigation = sp.GetRequiredService<NavigationManager>();
-    return new HttpClient { BaseAddress = new Uri(builder.Configuration.GetValue<string>("ApiBaseAddress")!) };
+    return new HttpClient { BaseAddress = baseAddress };
 });
 builder.Services.AddHttpClient();
 
-builder.Services.AddTransient<DevProjectAPI>();
-builder.Services.AddTransient<ItProjectAPI>();
-builder.Services.AddTransient<BlogPostAPI>();
-builder.Services.AddTransient<ImageAPI>();
+SharedServices.Register(builder.Services, baseAddress);
 
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("EntraStuff"));

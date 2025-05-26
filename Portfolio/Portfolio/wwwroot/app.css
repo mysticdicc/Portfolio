@@ -112,10 +112,12 @@ h1:focus {
     max-height: 30vh;
     height: fit-content;
     width: auto;
+    max-width: 90%;
 }
 
 .caro_image {
     max-height: 30vh;
+    max-width: 100%;
     height: auto;
     border-style: solid;
     border-color: deeppink;

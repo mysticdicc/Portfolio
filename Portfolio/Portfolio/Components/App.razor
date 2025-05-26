@@ -10,14 +10,14 @@
         <link rel="stylesheet" href="@Assets["lib/bootstrap/dist/css/bootstrap.min.css"]" />
         <link rel="stylesheet" href="@Assets["app.css"]" />
         <ImportMap />
-        <HeadOutlet @rendermode="InteractiveWebAssembly" />
-        <RadzenTheme @rendermode="InteractiveWebAssembly" Theme="material-dark" />
+        <HeadOutlet @rendermode="InteractiveAuto" />
+        <RadzenTheme @rendermode="InteractiveAuto" Theme="material-dark" />
     </head>
 
     <body>
-        <Routes @rendermode="InteractiveWebAssembly" />
+        <Routes @rendermode="InteractiveAuto" />
         <script src="_content/Radzen.Blazor/Radzen.Blazor.js?v=@(typeof(Radzen.Colors).Assembly.GetName().Version)"></script>
-        <script src="_framework/blazor.webassembly.js"></script>
+        <script src="_framework/blazor.web.js"></script>
         <script src="./js/layout.js"></script>
     </body>
 

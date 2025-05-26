@@ -6,6 +6,7 @@ using PortfolioClassLibrary.Classes.Blog;
 using PortfolioClassLibrary.Classes.DevProjects;
 using PortfolioClassLibrary.Classes.Images;
 using PortfolioClassLibrary.Classes.ItProjects;
+using Portfolio.Client.Services;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
@@ -21,15 +22,14 @@ builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddAuthenticationStateDeserialization();
 
+var baseAddress = new Uri(builder.Configuration.GetValue<string>("ApiBaseAddress")!);
+
 builder.Services.AddScoped(sp =>
 {
     NavigationManager navigation = sp.GetRequiredService<NavigationManager>();
-    return new HttpClient { BaseAddress = new Uri(builder.Configuration.GetValue<string>("ApiBaseAddress")!) };
+    return new HttpClient { BaseAddress = baseAddress };
 });
 
-builder.Services.AddTransient<DevProjectAPI>();
-builder.Services.AddTransient<ItProjectAPI>();
-builder.Services.AddTransient<BlogPostAPI>();
-builder.Services.AddTransient<ImageAPI>();
+SharedServices.Register(builder.Services, baseAddress);
 
 await builder.Build().RunAsync();

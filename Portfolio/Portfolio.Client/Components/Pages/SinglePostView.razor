@@ -7,9 +7,22 @@
 @page "/posts/{type}/{guid}"
 <PageTitle>Post - @guid</PageTitle>
 
+
+
 <RadzenCard Style="padding: 2rem; background: rgba(50, 50, 50, 0.5); min-width: 50vw; padding-bottom: 4rem;">
     @if (null != post)
     {
+        <AuthorizeView>
+            <Authorized>
+                <RadzenRow Style="padding-bottom: 1rem;">
+                    <RadzenButton Icon="delete" Click="@(() => DeletePost(post.ID))" />
+                    <RadzenButton Icon="edit" Click="@(() => ClickEdit())" />
+                    <RadzenText Style="margin-right: 0; margin-left: auto;">@post.ID.ToString()</RadzenText>
+                    <RadzenText Style="margin-right: 0; margin-left: 0;">@post.LastSubmit.ToString();</RadzenText>
+                </RadzenRow>
+            </Authorized>
+        </AuthorizeView>
+
         <PostEditor Hidden="@editHidden" HiddenChanged="@PostEditorEventCallback" Post="@post" PostType="@type" />
         <PostView Hidden="@(!editHidden)" HiddenChanged="@PostEditorEventCallback" Post="@post" PostType="@type" ShortPost="false" />
     }
@@ -27,7 +40,7 @@
         editHidden = true;
         await Refresh();
         await base.OnParametersSetAsync();
-        
+
     }
 
     async Task Refresh()
@@ -57,5 +70,29 @@
     async Task OpenImage(string remotePath)
     {
         await JSRuntime.InvokeAsync<object>("open", remotePath, "_blank");
+    }
+
+    async Task DeletePost(Guid id)
+    {
+        switch (type)
+        {
+            case "blog":
+                await BlogAPI.DeletePost(id);
+                break;
+            case "dev":
+                await DevAPI.DeletePost(id);
+                break;
+            case "it":
+                await ItAPI.DeletePost(id);
+                break;
+        }
+
+        NavManager.NavigateTo($"/posts/{type}");
+    }
+
+    void ClickEdit()
+    {
+        editHidden = !editHidden;
+        StateHasChanged();
     }
 }
