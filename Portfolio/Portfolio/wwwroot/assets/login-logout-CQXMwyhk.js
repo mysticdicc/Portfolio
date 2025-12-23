@@ -1,0 +1,1 @@
+import{m as e}from"./auth-BTasNIjh.js";window.onload=t;async function t(){var i=window.location.pathname,n=i.split("/").pop();n=="login.html"?e.handleRedirectPromise().then(o=>{o?document.location.href="index.html":e.loginRedirect()}):n=="logout.html"&&e.handleRedirectPromise().then(async o=>{o||await e.logoutRedirect(),document.location.href="index.html"})}

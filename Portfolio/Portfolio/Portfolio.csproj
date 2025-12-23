@@ -9,7 +9,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\PortfolioClassLibrary\PortfolioClassLibrary.csproj" />
-    <ProjectReference Include="..\Portfolio.Client\Portfolio.Client.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="9.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="9.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="9.0.4" />
@@ -24,16 +23,6 @@
     <PackageReference Include="Microsoft.Identity.Web" Version="3.8.4" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Radzen.Blazor" Version="6.6.4" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwroot\img\upload\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Update="wwwroot\js\layout.js">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
 </Project>
